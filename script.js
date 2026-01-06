@@ -443,13 +443,15 @@ class BaziCalculator {
         // 提取节气信息
         const solarTermsMatch = rawOutput.match(/立[^\\s]+\\s+[^\\s]+\\s+[^\\s]+/);
         if (solarTermsMatch) {
-            document.getElementById('solarTerms').textContent = solarTermsMatch[0];
+            const solarTermsElement = document.getElementById('solarTerms');
+            if (solarTermsElement) solarTermsElement.textContent = solarTermsMatch[0];
         }
         
         // 提取命宫信息
         const lifePalaceMatch = rawOutput.match(/命宫:([^\\s]+)/);
         if (lifePalaceMatch) {
-            document.getElementById('lifePalace').textContent = lifePalaceMatch[1];
+            const lifePalaceElement = document.getElementById('lifePalace');
+            if (lifePalaceElement) lifePalaceElement.textContent = lifePalaceMatch[1];
         }
     }
     
@@ -803,11 +805,16 @@ class BaziCalculator {
         const currentLuck = this.extractCurrentLuck(data.raw_output, currentYear);
         
         if (currentLuck) {
-            document.getElementById('currentLuckStart').textContent = currentLuck.startYear;
-            document.getElementById('currentLuckEnd').textContent = currentLuck.endYear;
-            document.getElementById('currentLuckStem').textContent = currentLuck.stem;
-            document.getElementById('currentLuckBranch').textContent = currentLuck.branch;
-            document.getElementById('currentLuckDescription').textContent = currentLuck.description;
+            const setIfExists = (id, value) => { 
+                const el = document.getElementById(id); 
+                if (el) el.textContent = value || '--'; 
+            };
+            
+            setIfExists('currentLuckStart', currentLuck.startYear);
+            setIfExists('currentLuckEnd', currentLuck.endYear);
+            setIfExists('currentLuckStem', currentLuck.stem);
+            setIfExists('currentLuckBranch', currentLuck.branch);
+            setIfExists('currentLuckDescription', currentLuck.description);
         }
     }
     
@@ -1004,10 +1011,15 @@ class BaziCalculator {
         // 填充各个分析面板的内容
         const analyses = this.generateDeepAnalysis(data);
         
-        document.getElementById('structureAnalysis').textContent = analyses.structure;
-        document.getElementById('balanceAnalysis').textContent = analyses.balance;
-        document.getElementById('combinationAnalysis').textContent = analyses.combination;
-        document.getElementById('transformationAnalysis').textContent = analyses.transformation;
+        const setIfExists = (id, value) => { 
+            const el = document.getElementById(id); 
+            if (el) el.textContent = value || '--'; 
+        };
+        
+        setIfExists('structureAnalysis', analyses.structure);
+        setIfExists('balanceAnalysis', analyses.balance);
+        setIfExists('combinationAnalysis', analyses.combination);
+        setIfExists('transformationAnalysis', analyses.transformation);
     }
     
     generateDeepAnalysis(data) {
@@ -1052,7 +1064,8 @@ class BaziCalculator {
         this.resultsContainer.style.display = 'none';
         
         // 显示错误信息
-        document.getElementById('errorText').textContent = errorMessage;
+        const errorTextElement = document.getElementById('errorText');
+        if (errorTextElement) errorTextElement.textContent = errorMessage;
         this.errorContainer.style.display = 'block';
         
         // 滚动到错误区域
