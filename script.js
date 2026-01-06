@@ -219,11 +219,17 @@ class BaziCalculator {
         // 显示十神分析
         this.displayTenGods(data);
         
-        // 显示格局和神煞分析
+        // 显示格局分析
         this.displayPatternAnalysis(data);
+        
+        // 显示神煞分析
+        this.displaySpiritualStars(data);
         
         // 显示大运流年
         this.displayLuckCycles(data);
+        
+        // 显示调候用神
+        this.displaySeasonalAdjustment(data);
         
         // 显示专业分析
         this.displayProfessionalAnalysis(data);
@@ -668,23 +674,22 @@ class BaziCalculator {
     displayPatternAnalysis(data) {
         // 显示格局分析
         this.displayPatterns(data);
-        
+    }
+    
+    displaySpiritualStars(data) {
         // 显示神煞分析 - 分类显示
         this.displaySpiritualStarsCategories(data);
-        
-        // 显示调候用神
-        this.displaySeasonalAdjustment(data);
     }
     
     displaySpiritualStarsCategories(data) {
         const auspiciousContainer = document.getElementById('auspiciousStars');
         const inauspiciousContainer = document.getElementById('inauspiciousStars');
-        const specialContainer = document.getElementById('specialStars');
+        const otherContainer = document.getElementById('otherStars');
         
-        if (!auspiciousContainer || !inauspiciousContainer || !specialContainer) return;
+        if (!auspiciousContainer || !inauspiciousContainer || !otherContainer) return;
         
         // 清空容器
-        [auspiciousContainer, inauspiciousContainer, specialContainer].forEach(container => {
+        [auspiciousContainer, inauspiciousContainer, otherContainer].forEach(container => {
             container.innerHTML = '';
         });
         
@@ -710,12 +715,12 @@ class BaziCalculator {
             inauspiciousContainer.appendChild(starTag);
         });
         
-        // 显示特殊神煞
+        // 显示其他神煞
         starCategories.special.forEach(star => {
             const starTag = document.createElement('div');
             starTag.className = 'star-tag';
             starTag.textContent = star;
-            specialContainer.appendChild(starTag);
+            otherContainer.appendChild(starTag);
         });
     }
     
