@@ -51,28 +51,146 @@
             <h2>Bazi Calculator Tool</h2>
             <p>Enter your birth information below to generate your bazi chart using our precise bazi calculator:</p>
             
-            <!-- Calculator placeholder - will be replaced with iframe -->
-            <div class="calculator-placeholder">
+            <!-- Calculator Form -->
+            <div class="calculator-container">
                 <div class="calculator-form">
                     <h3>Birth Information</h3>
-                    <p>The bazi calculator will be embedded here via iframe</p>
-                    <div class="form-preview">
-                        <div class="input-group">
-                            <label>Birth Date:</label>
-                            <input type="date" placeholder="Select your birth date">
+                    <form id="baziForm">
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="birthYear">Birth Year *</label>
+                                <input type="number" id="birthYear" name="year" min="1900" max="2100" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="birthMonth">Birth Month *</label>
+                                <select id="birthMonth" name="month" required>
+                                    <option value="">Select Month</option>
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <label>Birth Time:</label>
-                            <input type="time" placeholder="Select your birth time">
+                        
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="birthDay">Birth Day *</label>
+                                <input type="number" id="birthDay" name="day" min="1" max="31" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="birthHour">Birth Hour *</label>
+                                <select id="birthHour" name="hour" required>
+                                    <option value="">Select Hour</option>
+                                    <option value="0">00:00 - 01:00 (子时)</option>
+                                    <option value="1">01:00 - 03:00 (丑时)</option>
+                                    <option value="3">03:00 - 05:00 (寅时)</option>
+                                    <option value="5">05:00 - 07:00 (卯时)</option>
+                                    <option value="7">07:00 - 09:00 (辰时)</option>
+                                    <option value="9">09:00 - 11:00 (巳时)</option>
+                                    <option value="11">11:00 - 13:00 (午时)</option>
+                                    <option value="13">13:00 - 15:00 (未时)</option>
+                                    <option value="15">15:00 - 17:00 (申时)</option>
+                                    <option value="17">17:00 - 19:00 (酉时)</option>
+                                    <option value="19">19:00 - 21:00 (戌时)</option>
+                                    <option value="21">21:00 - 23:00 (亥时)</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <label>Gender:</label>
-                            <select>
-                                <option>Male</option>
-                                <option>Female</option>
-                            </select>
+                        
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="gender">Gender *</label>
+                                <select id="gender" name="gender" required>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="calendarType">Calendar Type *</label>
+                                <select id="calendarType" name="calendar_type" required>
+                                    <option value="gregorian">Gregorian (Solar)</option>
+                                    <option value="lunar">Lunar (Chinese)</option>
+                                </select>
+                            </div>
                         </div>
-                        <button class="btn-calculate" disabled>Calculate Bazi Chart</button>
+                        
+                        <button type="submit" class="btn-calculate" id="calculateBtn">
+                            <span class="btn-text">Calculate Bazi Chart</span>
+                            <span class="btn-loading" style="display: none;">
+                                <span class="spinner"></span>
+                                Calculating...
+                            </span>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Results Display -->
+                <div class="calculator-results" id="calculatorResults" style="display: none;">
+                    <h3>Your Bazi Chart Results</h3>
+                    
+                    <!-- Four Pillars Display -->
+                    <div class="four-pillars-section">
+                        <h4>Four Pillars (四柱)</h4>
+                        <div class="pillars-grid">
+                            <div class="pillar-card">
+                                <div class="pillar-label">Year Pillar</div>
+                                <div class="pillar-value" id="yearPillar">--</div>
+                            </div>
+                            <div class="pillar-card">
+                                <div class="pillar-label">Month Pillar</div>
+                                <div class="pillar-value" id="monthPillar">--</div>
+                            </div>
+                            <div class="pillar-card">
+                                <div class="pillar-label">Day Pillar</div>
+                                <div class="pillar-value" id="dayPillar">--</div>
+                            </div>
+                            <div class="pillar-card">
+                                <div class="pillar-label">Hour Pillar</div>
+                                <div class="pillar-value" id="hourPillar">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Five Elements Analysis -->
+                    <div class="five-elements-section">
+                        <h4>Five Elements Analysis (五行分析)</h4>
+                        <div class="elements-chart" id="elementsChart">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                        <div class="strength-indicator">
+                            <span>Chart Strength: </span>
+                            <span id="chartStrength" class="strength-value">--</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Basic Information -->
+                    <div class="basic-info-section">
+                        <h4>Birth Information</h4>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Gregorian Date:</span>
+                                <span class="info-value" id="gregorianDate">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Lunar Date:</span>
+                                <span class="info-value" id="lunarDate">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Error Display -->
+                    <div class="error-message" id="errorMessage" style="display: none;">
+                        <h4>Calculation Error</h4>
+                        <p id="errorText"></p>
                     </div>
                 </div>
             </div>

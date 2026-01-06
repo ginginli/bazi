@@ -299,46 +299,45 @@ body {
     z-index: 1;
 }
 
-.calculator-placeholder {
-    max-width: 700px;
+.calculator-container {
+    max-width: 900px;
     margin: 0 auto;
     background: linear-gradient(135deg, var(--surface-light), rgba(124, 58, 237, 0.05));
-    padding: 3rem;
     border-radius: 20px;
     border: 1px solid rgba(245, 158, 11, 0.2);
     backdrop-filter: blur(20px);
     position: relative;
     z-index: 1;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.calculator-form {
+    padding: 3rem;
 }
 
 .calculator-form h3 {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     color: var(--text-light);
     font-family: 'Crimson Pro', serif;
     font-size: 1.8rem;
     font-weight: 600;
 }
 
-.calculator-form > p {
-    text-align: center;
-    color: rgba(248, 250, 252, 0.7);
-    margin-bottom: 2.5rem;
-    font-style: italic;
-    font-family: 'JetBrains Mono', monospace;
-}
-
-.form-preview {
-    opacity: 0.8;
-}
-
-.input-group {
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
     margin-bottom: 2rem;
 }
 
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
 .input-group label {
-    display: block;
     margin-bottom: 0.8rem;
     font-weight: 600;
     color: var(--text-light);
@@ -347,7 +346,6 @@ body {
 
 .input-group input,
 .input-group select {
-    width: 100%;
     padding: 16px;
     border: 1px solid rgba(245, 158, 11, 0.3);
     border-radius: 12px;
@@ -368,14 +366,219 @@ body {
 .btn-calculate {
     width: 100%;
     padding: 18px;
-    background: linear-gradient(135deg, rgba(156, 163, 175, 0.3), rgba(107, 114, 128, 0.3));
-    color: rgba(248, 250, 252, 0.5);
-    border: 1px solid rgba(156, 163, 175, 0.2);
+    background: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
+    color: var(--text-light);
+    border: none;
     border-radius: 12px;
     font-size: 1.2rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-calculate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+}
+
+.btn-calculate:disabled {
+    background: linear-gradient(135deg, rgba(156, 163, 175, 0.3), rgba(107, 114, 128, 0.3));
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Results Display */
+.calculator-results {
+    background: linear-gradient(135deg, var(--surface-medium), var(--surface-dark));
+    padding: 3rem;
+    border-top: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.calculator-results h3 {
+    text-align: center;
+    color: var(--text-light);
+    font-family: 'Crimson Pro', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 3rem;
+}
+
+.calculator-results h4 {
+    color: var(--accent-gold);
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Four Pillars Display */
+.four-pillars-section {
+    margin-bottom: 3rem;
+}
+
+.pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.pillar-card {
+    background: linear-gradient(135deg, var(--surface-light), rgba(124, 58, 237, 0.1));
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
     backdrop-filter: blur(10px);
+}
+
+.pillar-label {
+    font-size: 0.9rem;
+    color: rgba(248, 250, 252, 0.7);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.pillar-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-light);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Five Elements Analysis */
+.five-elements-section {
+    margin-bottom: 3rem;
+}
+
+.elements-chart {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.element-bar {
+    background: linear-gradient(135deg, var(--surface-light), rgba(124, 58, 237, 0.1));
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.element-name {
+    font-size: 0.9rem;
+    color: rgba(248, 250, 252, 0.7);
+    margin-bottom: 0.5rem;
+}
+
+.element-score {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.strength-indicator {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--text-light);
+}
+
+.strength-value {
+    font-weight: 600;
+    color: var(--accent-gold);
+}
+
+/* Basic Information */
+.basic-info-section {
+    margin-bottom: 2rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.info-item {
+    background: linear-gradient(135deg, var(--surface-light), rgba(124, 58, 237, 0.1));
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-label {
+    font-weight: 500;
+    color: rgba(248, 250, 252, 0.7);
+}
+
+.info-value {
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+/* Error Display */
+.error-message {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.1));
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.error-message h4 {
+    color: #ef4444;
+    margin-bottom: 1rem;
+}
+
+.error-message p {
+    color: rgba(248, 250, 252, 0.8);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .pillars-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .elements-chart {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .calculator-form,
+    .calculator-results {
+        padding: 2rem;
+    }
 }
 
 /* Features Section */
