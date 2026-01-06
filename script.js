@@ -173,10 +173,11 @@ class BaziCalculator {
         
         // 显示四柱信息
         if (data.four_pillars) {
-            document.getElementById('yearPillar').textContent = data.four_pillars.year || '--';
-            document.getElementById('monthPillar').textContent = data.four_pillars.month || '--';
-            document.getElementById('dayPillar').textContent = data.four_pillars.day || '--';
-            document.getElementById('hourPillar').textContent = data.four_pillars.hour || '--';
+            const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
+            setIfExists('yearPillar', data.four_pillars.year);
+            setIfExists('monthPillar', data.four_pillars.month);
+            setIfExists('dayPillar', data.four_pillars.day);
+            setIfExists('hourPillar', data.four_pillars.hour);
             
             // 显示四柱对应的十神
             this.displayPillarElements(data.four_pillars);
@@ -191,11 +192,12 @@ class BaziCalculator {
             this.displayFiveElements(data.five_elements.scores, data.five_elements.status);
             
             if (data.five_elements.strength) {
-                document.getElementById('chartStrength').textContent = data.five_elements.strength;
+                const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
+                setIfExists('chartStrength', data.five_elements.strength);
                 
                 // 显示强弱平衡状态
                 const balance = this.analyzeElementBalance(data.five_elements.scores, data.five_elements.strength);
-                document.getElementById('elementBalance').textContent = balance;
+                setIfExists('elementBalance', balance);
             }
             
             // 显示中值和强根信息
@@ -256,7 +258,8 @@ class BaziCalculator {
         
         // 显示原始输出（调试用）
         if (data.raw_output) {
-            document.getElementById('rawOutput').textContent = data.raw_output;
+            const rawOutputElement = document.getElementById('rawOutput');
+            if (rawOutputElement) rawOutputElement.textContent = data.raw_output;
         }
         
         // 显示结果容器
@@ -282,21 +285,23 @@ class BaziCalculator {
             '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水'
         };
         
+        const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
+        
         if (pillars.year) {
             const yearElement = elements[pillars.year[0]] || '';
-            document.getElementById('yearElement').textContent = yearElement;
+            setIfExists('yearElement', yearElement);
         }
         if (pillars.month) {
             const monthElement = elements[pillars.month[0]] || '';
-            document.getElementById('monthElement').textContent = monthElement;
+            setIfExists('monthElement', monthElement);
         }
         if (pillars.day) {
             const dayElement = elements[pillars.day[0]] || '';
-            document.getElementById('dayElement').textContent = dayElement;
+            setIfExists('dayElement', dayElement);
         }
         if (pillars.hour) {
             const hourElement = elements[pillars.hour[0]] || '';
-            document.getElementById('hourElement').textContent = hourElement;
+            setIfExists('hourElement', hourElement);
         }
     }
     
@@ -393,8 +398,9 @@ class BaziCalculator {
             }
         }
         
-        document.getElementById('primaryPattern').textContent = primaryPattern;
-        document.getElementById('secondaryPattern').textContent = secondaryPattern;
+        const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
+        setIfExists('primaryPattern', primaryPattern);
+        setIfExists('secondaryPattern', secondaryPattern);
     }
     
     displaySpiritualStars(data) {
@@ -451,9 +457,10 @@ class BaziCalculator {
         // 基于五行和格局的个性分析
         const insights = this.generatePersonalityInsights(data);
         
-        document.getElementById('characterTraits').textContent = insights.character;
-        document.getElementById('strengthsTalents').textContent = insights.strengths;
-        document.getElementById('areasGrowth').textContent = insights.growth;
+        const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
+        setIfExists('characterTraits', insights.character);
+        setIfExists('strengthsTalents', insights.strengths);
+        setIfExists('areasGrowth', insights.growth);
     }
     
     generatePersonalityInsights(data) {
@@ -497,10 +504,11 @@ class BaziCalculator {
         // 生活各方面的指导建议
         const guidance = this.generateLifeGuidance(data);
         
-        document.getElementById('careerWealth').textContent = guidance.career;
-        document.getElementById('relationships').textContent = guidance.relationships;
-        document.getElementById('healthWellness').textContent = guidance.health;
-        document.getElementById('lifePurpose').textContent = guidance.purpose;
+        const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
+        setIfExists('careerWealth', guidance.career);
+        setIfExists('relationships', guidance.relationships);
+        setIfExists('healthWellness', guidance.health);
+        setIfExists('lifePurpose', guidance.purpose);
     }
     
     generateLifeGuidance(data) {
@@ -733,9 +741,14 @@ class BaziCalculator {
             const adjustmentGod = this.getAdjustmentGod(season, data);
             const recommendation = this.getSeasonalRecommendation(season, adjustmentGod);
             
-            document.getElementById('birthSeason').textContent = season;
-            document.getElementById('adjustmentGod').textContent = adjustmentGod;
-            document.getElementById('seasonalRecommendation').textContent = recommendation;
+            // Add null checks to prevent errors
+            const birthSeasonElement = document.getElementById('birthSeason');
+            const adjustmentGodElement = document.getElementById('adjustmentGod');
+            const seasonalRecommendationElement = document.getElementById('seasonalRecommendation');
+            
+            if (birthSeasonElement) birthSeasonElement.textContent = season;
+            if (adjustmentGodElement) adjustmentGodElement.textContent = adjustmentGod;
+            if (seasonalRecommendationElement) seasonalRecommendationElement.textContent = recommendation;
         }
     }
     
