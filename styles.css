@@ -2155,7 +2155,7 @@ h4, h5, h6 {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    color: var(--text-secondary);
+    color: #f59e0b; /* Gold color for tab titles */
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
@@ -2166,7 +2166,7 @@ h4, h5, h6 {
 
 .breadcrumb-tab:hover {
     background: rgba(255, 255, 255, 0.15);
-    color: var(--text-light);
+    color: #fbbf24; /* Lighter gold on hover */
     transform: translateY(-1px);
 }
 
