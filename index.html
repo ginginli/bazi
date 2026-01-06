@@ -140,11 +140,7 @@
                     <!-- Breadcrumb Navigation -->
                     <div class="results-breadcrumb">
                         <div class="breadcrumb-tabs">
-                            <button class="breadcrumb-tab active" data-section="overview">
-                                <span class="tab-icon">📊</span>
-                                <span class="tab-text">Overview</span>
-                            </button>
-                            <button class="breadcrumb-tab" data-section="pillars">
+                            <button class="breadcrumb-tab active" data-section="pillars">
                                 <span class="tab-icon">🏛️</span>
                                 <span class="tab-text">Four Pillars</span>
                             </button>
@@ -174,70 +170,8 @@
                     <!-- Results Content Sections -->
                     <div class="results-content">
                         
-                        <!-- Overview Section -->
-                        <div class="result-section active" id="section-overview">
-                            <!-- Basic Information -->
-                            <div class="basic-info-section">
-                                <h4>Birth Information</h4>
-                                <div class="info-grid">
-                                    <div class="info-item">
-                                        <span class="info-label">Gregorian Date:</span>
-                                        <span class="info-value" id="gregorianDate">--</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Lunar Date:</span>
-                                        <span class="info-value" id="lunarDate">--</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Solar Terms:</span>
-                                        <span class="info-value" id="solarTerms">--</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Life Palace:</span>
-                                        <span class="info-value" id="lifePalace">--</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Body Palace:</span>
-                                        <span class="info-value" id="bodyPalace">--</span>
-                                    </div>
-                                    <div class="info-item">
-                                        <span class="info-label">Taiyuan:</span>
-                                        <span class="info-value" id="taiyuan">--</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Quick Summary -->
-                            <div class="summary-section">
-                                <h4>Chart Summary</h4>
-                                <div class="summary-cards">
-                                    <div class="summary-card">
-                                        <div class="summary-icon">💪</div>
-                                        <div class="summary-content">
-                                            <div class="summary-label">Chart Strength</div>
-                                            <div class="summary-value" id="summaryStrength">--</div>
-                                        </div>
-                                    </div>
-                                    <div class="summary-card">
-                                        <div class="summary-icon">⚖️</div>
-                                        <div class="summary-content">
-                                            <div class="summary-label">Element Balance</div>
-                                            <div class="summary-value" id="summaryBalance">--</div>
-                                        </div>
-                                    </div>
-                                    <div class="summary-card">
-                                        <div class="summary-icon">🎭</div>
-                                        <div class="summary-content">
-                                            <div class="summary-label">Primary Pattern</div>
-                                            <div class="summary-value" id="summaryPattern">--</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Four Pillars Section -->
-                        <div class="result-section" id="section-pillars">
+                        <div class="result-section active" id="section-pillars">
                             <div class="four-pillars-section">
                                 <h4>Four Pillars (四柱)</h4>
                                 <div class="pillars-grid">
@@ -262,6 +196,9 @@
                                         <div class="pillar-element" id="hourElement">--</div>
                                     </div>
                                 </div>
+                                <div class="share-card" id="pillarsImage" style="display: none;">
+                                    <svg id="pillarsSvg" width="1080" height="540" viewBox="0 0 1080 540" xmlns="http://www.w3.org/2000/svg"></svg>
+                                </div>
                             </div>
                         </div>
                         
@@ -281,6 +218,9 @@
                                         <span>Element Balance: </span>
                                         <span id="elementBalance" class="balance-value">--</span>
                                     </div>
+                                </div>
+                                <div class="share-card" id="elementsImage" style="display: none;">
+                                    <svg id="elementsSvg" width="1080" height="540" viewBox="0 0 1080 540" xmlns="http://www.w3.org/2000/svg"></svg>
                                 </div>
                             </div>
                         </div>

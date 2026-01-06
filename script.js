@@ -60,10 +60,6 @@ class BaziCalculator {
         this.form = document.getElementById('baziForm');
         this.resultsContainer = document.getElementById('calculatorResults');
         this.errorContainer = document.getElementById('errorMessage');
-        this.shareBtn = document.getElementById('generateShareBtn');
-        if (this.shareBtn) {
-            this.shareBtn.addEventListener('click', () => this.generateShareImage());
-        }
         
         this.initializeEventListeners();
     }
@@ -98,6 +94,7 @@ class BaziCalculator {
         try {
             const result = await this.callBaziAPI(data);
             if (result.success) {
+                this.lastData = result.data;
                 this.displayResults(result.data);
             } else {
                 this.displayError(result.error || 'Calculation failed');
@@ -183,6 +180,10 @@ class BaziCalculator {
             
             // 显示四柱对应的十神
             this.displayPillarElements(data.four_pillars);
+            
+            // 自动生成四柱图片
+            this.buildPillarsSectionImage(data);
+            this.showPillarsImage();
         }
         
         // 显示五行分析
@@ -204,6 +205,10 @@ class BaziCalculator {
                     strengthElement.textContent = `${data.five_elements.strength} (中值: ${data.five_elements.middle_value})`;
                 }
             }
+            
+            // 自动生成五行图片
+            this.buildElementsSectionImage(data);
+            this.showElementsImage();
         }
         
         // 显示十神分析
@@ -217,30 +222,13 @@ class BaziCalculator {
         
         // 显示基本信息
         if (data.basic_info) {
-            document.getElementById('gregorianDate').textContent = data.basic_info.gregorian_date || '--';
-            document.getElementById('lunarDate').textContent = data.basic_info.lunar_date || '--';
-            
-            // 显示命宫信息
-            if (data.basic_info.life_palace) {
-                document.getElementById('lifePalace').textContent = data.basic_info.life_palace;
-            }
-            
-            // 显示身宫信息
-            if (data.basic_info.body_palace) {
-                document.getElementById('bodyPalace').textContent = data.basic_info.body_palace;
-            }
-            
-            // 显示胎元信息
-            if (data.basic_info.taiyuan) {
-                document.getElementById('taiyuan').textContent = data.basic_info.taiyuan;
-            }
-            
-            // 显示节气信息
-            if (data.basic_info.solar_terms) {
-                document.getElementById('solarTerms').textContent = data.basic_info.solar_terms;
-            } else if (data.basic_info.lichun_time) {
-                document.getElementById('solarTerms').textContent = data.basic_info.lichun_time;
-            }
+            const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
+            setIfExists('gregorianDate', data.basic_info.gregorian_date);
+            setIfExists('lunarDate', data.basic_info.lunar_date);
+            setIfExists('lifePalace', data.basic_info.life_palace);
+            setIfExists('bodyPalace', data.basic_info.body_palace);
+            setIfExists('taiyuan', data.basic_info.taiyuan);
+            setIfExists('solarTerms', data.basic_info.solar_terms || data.basic_info.lichun_time);
             
             // 从原始输出中提取更多信息
             this.extractAdditionalInfo(data.raw_output);
@@ -265,13 +253,15 @@ class BaziCalculator {
         
         // 确保概览标签页是激活状态
         if (window.breadcrumbNav) {
-            window.breadcrumbNav.switchToSection('overview');
+            window.breadcrumbNav.switchToSection('pillars');
         }
         
         // 滚动到结果区域
         this.resultsContainer.scrollIntoView({ behavior: 'smooth' });
         
         this.buildShareCard(data);
+        this.buildPillarsSectionImage(data);
+        this.buildElementsSectionImage(data);
     }
     
     displayPillarElements(pillars) {
@@ -546,6 +536,20 @@ class BaziCalculator {
         }
     }
     
+    showPillarsImage() {
+        const imageContainer = document.getElementById('pillarsImage');
+        if (imageContainer) {
+            imageContainer.style.display = 'block';
+        }
+    }
+    
+    showElementsImage() {
+        const imageContainer = document.getElementById('elementsImage');
+        if (imageContainer) {
+            imageContainer.style.display = 'block';
+        }
+    }
+    
     displayFiveElements(scores, status) {
         const elementsChart = document.getElementById('elementsChart');
         elementsChart.innerHTML = '';
@@ -750,6 +754,339 @@ BaziCalculator.prototype.generateShareImage = function() {
     img.src = svgUrl;
 };
 
+BaziCalculator.prototype.exportSvgAsPng = function(svgId, fileName, width, height, bg) {
+    const svgEl = document.getElementById(svgId);
+    if (!svgEl) return;
+    const serializer = new XMLSerializer();
+    const svgStr = serializer.serializeToString(svgEl);
+    const svgUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+    const img = new Image();
+    img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = bg || '#121326';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+    img.src = svgUrl;
+};
+
+BaziCalculator.prototype.generatePillarsImage = function() {
+    this.exportSvgAsPng('pillarsSvg', 'bazi-pillars.png', 1080, 540, '#121326');
+};
+
+BaziCalculator.prototype.generateElementsImage = function() {
+    this.exportSvgAsPng('elementsSvg', 'bazi-elements.png', 1080, 540, '#121326');
+};
+
+BaziCalculator.prototype.buildPillarsSectionImage = function(data) {
+    const svg = document.getElementById('pillarsSvg');
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    
+    // 背景
+    const bg = createSvgEl('rect', { x: 0, y: 0, width: 1080, height: 540, rx: 32, fill: '#121326' });
+    svg.appendChild(bg);
+    
+    // 标题
+    const title = createSvgEl('text', { x: 540, y: 80, 'text-anchor': 'middle', fill: '#f59e0b', 'font-size': '42', 'font-family': 'Crimson Pro, serif', 'font-weight': 'bold' });
+    title.textContent = '四柱 Four Pillars';
+    svg.appendChild(title);
+    
+    const pillars = data.four_pillars || {};
+    const pw = 200, ph = 160, gap = 50, startX = 90, y = 200;
+    
+    const labels = [
+        { k: 'year', n: '年柱', en: 'Year' },
+        { k: 'month', n: '月柱', en: 'Month' },
+        { k: 'day', n: '日柱', en: 'Day' },
+        { k: 'hour', n: '时柱', en: 'Hour' }
+    ];
+    
+    const colors = ['#7c3aed', '#ea580c', '#f59e0b', '#1d4ed8'];
+    
+    labels.forEach((item, i) => {
+        const x = startX + i * (pw + gap);
+        
+        // 柱子卡片
+        const card = createSvgEl('rect', { 
+            x, y, width: pw, height: ph, rx: 20, 
+            fill: 'rgba(248,250,252,0.08)', 
+            stroke: colors[i], 
+            'stroke-width': 2 
+        });
+        svg.appendChild(card);
+        
+        // 中文标签
+        const cnLabel = createSvgEl('text', { 
+            x: x + pw / 2, y: y + 35, 
+            'text-anchor': 'middle', 
+            fill: colors[i], 
+            'font-size': '24', 
+            'font-weight': 'bold' 
+        });
+        cnLabel.textContent = item.n;
+        svg.appendChild(cnLabel);
+        
+        // 英文标签
+        const enLabel = createSvgEl('text', { 
+            x: x + pw / 2, y: y + 60, 
+            'text-anchor': 'middle', 
+            fill: '#cbd5e1', 
+            'font-size': '18' 
+        });
+        enLabel.textContent = item.en;
+        svg.appendChild(enLabel);
+        
+        // 八字值
+        const value = createSvgEl('text', { 
+            x: x + pw / 2, y: y + 110, 
+            'text-anchor': 'middle', 
+            fill: '#f8fafc', 
+            'font-size': '48', 
+            'font-family': 'JetBrains Mono, monospace',
+            'font-weight': 'bold'
+        });
+        value.textContent = pillars[item.k] || '--';
+        svg.appendChild(value);
+        
+        // 装饰线
+        const line = createSvgEl('line', { 
+            x1: x + 20, y1: y + 75, 
+            x2: x + pw - 20, y2: y + 75, 
+            stroke: colors[i], 
+            'stroke-width': 1, 
+            opacity: 0.5 
+        });
+        svg.appendChild(line);
+    });
+    
+    // 底部装饰
+    const decorLine = createSvgEl('line', { 
+        x1: 100, y1: 450, 
+        x2: 980, y2: 450, 
+        stroke: 'rgba(245,158,11,0.3)', 
+        'stroke-width': 2 
+    });
+    svg.appendChild(decorLine);
+    
+    // Logo
+    const logoText = createSvgEl('text', { 
+        x: 540, y: 490, 
+        'text-anchor': 'middle', 
+        fill: '#94a3b8', 
+        'font-size': '20' 
+    });
+    logoText.textContent = 'Generated by Bazi Calculator';
+    svg.appendChild(logoText);
+};
+
+BaziCalculator.prototype.buildElementsSectionImage = function(data) {
+    const svg = document.getElementById('elementsSvg');
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    
+    // 背景
+    const bg = createSvgEl('rect', { x: 0, y: 0, width: 1080, height: 540, rx: 32, fill: '#121326' });
+    svg.appendChild(bg);
+    
+    // 标题
+    const title = createSvgEl('text', { x: 540, y: 80, 'text-anchor': 'middle', fill: '#f59e0b', 'font-size': '42', 'font-family': 'Crimson Pro, serif', 'font-weight': 'bold' });
+    title.textContent = '五行分析 Five Elements';
+    svg.appendChild(title);
+    
+    const scores = (data.five_elements && data.five_elements.scores) ? data.five_elements.scores : { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
+    const status = (data.five_elements && data.five_elements.status) ? data.five_elements.status : {};
+    
+    const elements = [
+        { key: '木', name: 'Wood', color: '#059669', x: 120 },
+        { key: '火', name: 'Fire', color: '#dc2626', x: 300 },
+        { key: '土', name: 'Earth', color: '#ea580c', x: 480 },
+        { key: '金', name: 'Metal', color: '#64748b', x: 660 },
+        { key: '水', name: 'Water', color: '#1d4ed8', x: 840 }
+    ];
+    
+    const maxScore = Math.max(...Object.values(scores)) || 1;
+    const barHeight = 200;
+    const barWidth = 80;
+    const baseY = 400;
+    
+    elements.forEach(element => {
+        const score = scores[element.key] || 0;
+        const elementStatus = status[element.key] || '';
+        const height = (score / maxScore) * barHeight;
+        const x = element.x;
+        const y = baseY - height;
+        
+        // 柱状图背景
+        const bgBar = createSvgEl('rect', { 
+            x: x - barWidth/2, y: baseY - barHeight, 
+            width: barWidth, height: barHeight, 
+            rx: 8, fill: 'rgba(148,163,184,0.1)', 
+            stroke: 'rgba(148,163,184,0.2)' 
+        });
+        svg.appendChild(bgBar);
+        
+        // 实际数值柱
+        const bar = createSvgEl('rect', { 
+            x: x - barWidth/2, y: y, 
+            width: barWidth, height: height, 
+            rx: 8, fill: element.color, 
+            opacity: 0.8 
+        });
+        svg.appendChild(bar);
+        
+        // 发光效果
+        const glow = createSvgEl('rect', { 
+            x: x - barWidth/2, y: y, 
+            width: barWidth, height: height, 
+            rx: 8, fill: element.color, 
+            opacity: 0.3,
+            filter: 'blur(4px)'
+        });
+        svg.appendChild(glow);
+        
+        // 中文标签
+        const cnLabel = createSvgEl('text', { 
+            x: x, y: 440, 
+            'text-anchor': 'middle', 
+            fill: element.color, 
+            'font-size': '32', 
+            'font-weight': 'bold' 
+        });
+        cnLabel.textContent = element.key;
+        svg.appendChild(cnLabel);
+        
+        // 英文标签
+        const enLabel = createSvgEl('text', { 
+            x: x, y: 465, 
+            'text-anchor': 'middle', 
+            fill: '#cbd5e1', 
+            'font-size': '18' 
+        });
+        enLabel.textContent = element.name;
+        svg.appendChild(enLabel);
+        
+        // 分数
+        const scoreText = createSvgEl('text', { 
+            x: x, y: y - 10, 
+            'text-anchor': 'middle', 
+            fill: '#f8fafc', 
+            'font-size': '24', 
+            'font-weight': 'bold' 
+        });
+        scoreText.textContent = score.toString();
+        svg.appendChild(scoreText);
+        
+        // 状态标签
+        if (elementStatus) {
+            const statusText = createSvgEl('text', { 
+                x: x, y: 490, 
+                'text-anchor': 'middle', 
+                fill: '#f59e0b', 
+                'font-size': '16', 
+                'font-weight': 'bold' 
+            });
+            statusText.textContent = elementStatus;
+            svg.appendChild(statusText);
+        }
+    });
+    
+    // 强弱信息
+    if (data.five_elements && data.five_elements.strength) {
+        const strengthText = createSvgEl('text', { 
+            x: 540, y: 140, 
+            'text-anchor': 'middle', 
+            fill: '#cbd5e1', 
+            'font-size': '24' 
+        });
+        strengthText.textContent = `Chart Strength: ${data.five_elements.strength}`;
+        svg.appendChild(strengthText);
+        
+        if (data.five_elements.middle_value) {
+            const middleText = createSvgEl('text', { 
+                x: 540, y: 170, 
+                'text-anchor': 'middle', 
+                fill: '#94a3b8', 
+                'font-size': '20' 
+            });
+            middleText.textContent = `Middle Value: ${data.five_elements.middle_value}`;
+            svg.appendChild(middleText);
+        }
+    }
+    
+    // Logo
+    const logoText = createSvgEl('text', { 
+        x: 540, y: 520, 
+        'text-anchor': 'middle', 
+        fill: '#94a3b8', 
+        'font-size': '20' 
+    });
+    logoText.textContent = 'Generated by Bazi Calculator';
+    svg.appendChild(logoText);
+};
+        { k: 'hour', n: '时柱' }
+    ];
+    labels.forEach((item, i) => {
+        const x = 110 + i * (pw + gap);
+        const card = createSvgEl('rect', { x, y, width: pw, height: ph, rx: 16, fill: 'rgba(248,250,252,0.06)', stroke: 'rgba(245,158,11,0.25)' });
+        svg.appendChild(card);
+        const lt = createSvgEl('text', { x: x + pw / 2, y: y + 40, 'text-anchor': 'middle', fill: '#cbd5e1', 'font-size': '22' });
+        lt.textContent = item.n;
+        svg.appendChild(lt);
+        const val = createSvgEl('text', { x: x + pw / 2, y: y + 90, 'text-anchor': 'middle', fill: '#f8fafc', 'font-size': '38', 'font-family': 'JetBrains Mono, monospace' });
+        val.textContent = pillars[item.k] || '--';
+        svg.appendChild(val);
+    });
+    const footer = createSvgEl('text', { x: 540, y: 510, 'text-anchor': 'middle', fill: '#94a3b8', 'font-size': '18' });
+    footer.textContent = 'Bazi Calculator';
+    svg.appendChild(footer);
+};
+
+BaziCalculator.prototype.buildElementsSectionImage = function(data) {
+    const svg = document.getElementById('elementsSvg');
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    const bg = createSvgEl('rect', { x: 0, y: 0, width: 1080, height: 540, rx: 32, fill: '#121326' });
+    svg.appendChild(bg);
+    const title = createSvgEl('text', { x: 540, y: 60, 'text-anchor': 'middle', fill: '#f59e0b', 'font-size': '36', 'font-family': 'JetBrains Mono, monospace' });
+    title.textContent = '五行分析';
+    svg.appendChild(title);
+    const scores = (data.five_elements && data.five_elements.scores) ? data.five_elements.scores : { '木': 1, '火': 1, '土': 1, '金': 1, '水': 1 };
+    const status = (data.five_elements && data.five_elements.status) ? data.five_elements.status : {};
+    const colors = { '木': '#059669', '火': '#dc2626', '土': '#ea580c', '金': '#64748b', '水': '#1d4ed8' };
+    const keys = ['木','火','土','金','水'];
+    const baseX = 120, baseY = 140, barW = 160, barH = 260, gap = 40;
+    const maxScore = Math.max(...keys.map(k => scores[k] || 0)) || 1;
+    keys.forEach((k, i) => {
+        const x = baseX + i * (barW + gap);
+        const h = barH * ((scores[k] || 0) / maxScore);
+        const barBg = createSvgEl('rect', { x, y: baseY, width: barW, height: barH, rx: 10, fill: 'rgba(148,163,184,0.15)' });
+        svg.appendChild(barBg);
+        const bar = createSvgEl('rect', { x, y: baseY + (barH - h), width: barW, height: h, rx: 10, fill: colors[k] });
+        svg.appendChild(bar);
+        const name = createSvgEl('text', { x: x + barW / 2, y: baseY + barH + 30, 'text-anchor': 'middle', fill: '#e5e7eb', 'font-size': '22' });
+        name.textContent = k + ' ' + (scores[k] || 0);
+        svg.appendChild(name);
+        if (status[k]) {
+            const st = createSvgEl('text', { x: x + barW / 2, y: baseY - 10, 'text-anchor': 'middle', fill: '#f59e0b', 'font-size': '18' });
+            st.textContent = status[k];
+            svg.appendChild(st);
+        }
+    });
+    const footer = createSvgEl('text', { x: 540, y: 510, 'text-anchor': 'middle', fill: '#94a3b8', 'font-size': '18' });
+    footer.textContent = 'Bazi Calculator';
+    svg.appendChild(footer);
+};
+
 // Breadcrumb Navigation Functionality
 class BreadcrumbNavigation {
     constructor() {
@@ -803,6 +1140,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Make breadcrumb navigation globally accessible
     window.breadcrumbNav = breadcrumbNav;
+    window.baziCalculator = calculator;
     
     // Legacy placeholder functionality
     const calculatorPlaceholder = document.querySelector('.calculator-placeholder');
