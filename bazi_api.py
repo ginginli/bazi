@@ -74,19 +74,19 @@ class BaziCalculator:
             
             # 解析基本信息
             for i, line in enumerate(lines):
-                # 解析命宫、胎元、身宫信息
-                if "Life Palace:" in line or "命宫:" in line:
+                # 解析命宫、胎元、身宫信息 (可能在同一行)
+                if "命宫:" in line or "Life Palace:" in line:
                     # 提取命宫信息
                     palace_match = re.search(r'(?:Life Palace:|命宫:)\s*([^\s]+)', line)
                     if palace_match:
                         result["basic_info"]["life_palace"] = palace_match.group(1)
                     
-                    # 提取胎元信息
+                    # 提取胎元信息 (在同一行)
                     taiyuan_match = re.search(r'胎元:\s*([^\s]+)', line)
                     if taiyuan_match:
                         result["basic_info"]["taiyuan"] = taiyuan_match.group(1)
                     
-                    # 提取身宫信息
+                    # 提取身宫信息 (在同一行)
                     body_palace_match = re.search(r'身宫:\s*([^\s]+)', line)
                     if body_palace_match:
                         result["basic_info"]["body_palace"] = body_palace_match.group(1)

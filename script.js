@@ -236,6 +236,11 @@ class BaziCalculator {
             setIfExists('taiyuan', data.basic_info.taiyuan);
             setIfExists('solarTerms', data.basic_info.solar_terms || data.basic_info.lichun_time);
             
+            // 更新宫位解释卡片的显示值
+            setIfExists('lifePalaceDisplay', data.basic_info.life_palace);
+            setIfExists('bodyPalaceDisplay', data.basic_info.body_palace);
+            setIfExists('taiyuanDisplay', data.basic_info.taiyuan);
+            
             // 从原始输出中提取更多信息
             this.extractAdditionalInfo(data.raw_output);
         }
