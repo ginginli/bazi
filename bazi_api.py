@@ -73,15 +73,42 @@ class BaziCalculator:
             }
             
             # 解析基本信息
-            for line in lines:
+            for i, line in enumerate(lines):
+                # 解析命宫、胎元、身宫信息
+                if "Life Palace:" in line or "命宫:" in line:
+                    # 提取命宫信息
+                    palace_match = re.search(r'(?:Life Palace:|命宫:)\s*([^\s]+)', line)
+                    if palace_match:
+                        result["basic_info"]["life_palace"] = palace_match.group(1)
+                    
+                    # 提取胎元信息
+                    taiyuan_match = re.search(r'胎元:\s*([^\s]+)', line)
+                    if taiyuan_match:
+                        result["basic_info"]["taiyuan"] = taiyuan_match.group(1)
+                    
+                    # 提取身宫信息
+                    body_palace_match = re.search(r'身宫:\s*([^\s]+)', line)
+                    if body_palace_match:
+                        result["basic_info"]["body_palace"] = body_palace_match.group(1)
+                
+                # 解析节气信息
+                if "立春" in line and "雨水" in line:
+                    result["basic_info"]["solar_terms"] = line.strip()
+                
+                # 解析具体节气时间
+                if "立春" in line and ":" in line and len(line.split()) > 2:
+                    result["basic_info"]["lichun_time"] = line.strip()
+                elif "雨水" in line and ":" in line and len(line.split()) > 2:
+                    result["basic_info"]["yushui_time"] = line.strip()
+                
                 # 解析公历农历信息
                 if "公历:" in line and "农历:" in line:
                     parts = line.split()
-                    for i, part in enumerate(parts):
-                        if "公历:" in part and i + 1 < len(parts):
-                            result["basic_info"]["gregorian_date"] = parts[i + 1]
-                        elif "农历:" in part and i + 1 < len(parts):
-                            result["basic_info"]["lunar_date"] = parts[i + 1]
+                    for j, part in enumerate(parts):
+                        if "公历:" in part and j + 1 < len(parts):
+                            result["basic_info"]["gregorian_date"] = parts[j + 1]
+                        elif "农历:" in part and j + 1 < len(parts):
+                            result["basic_info"]["lunar_date"] = parts[j + 1]
                 
                 # 解析四柱信息 - 寻找包含天干地支的行
                 if "四柱：" in line:
@@ -95,9 +122,17 @@ class BaziCalculator:
                             "hour": pillars[3]
                         }
                 
+                # 解析五行分数和强弱信息
+                if "金:" in line and "木:" in line and "水:" in line and "火:" in line and "土:" in line:
+                    # 解析五行状态（旺、相、休、囚、死）
+                    elements_status = {}
+                    status_matches = re.findall(r'([金木水火土]):([旺相休囚死])', line)
+                    for element, status in status_matches:
+                        elements_status[element] = status
+                    result["five_elements"]["status"] = elements_status
+                
                 # 解析五行分数 - 寻找包含五行数值的行
-                if "金" in line and "木" in line and "水" in line and "火" in line and "土" in line:
-                    # 使用正则表达式提取五行分数
+                if re.search(r'金\d+\s+木\d+\s+水\d+\s+火\d+\s+土\d+', line):
                     elements_match = re.findall(r'([金木水火土])(\d+)', line)
                     if elements_match:
                         elements = {}
@@ -105,32 +140,58 @@ class BaziCalculator:
                             elements[element] = int(score)
                         result["five_elements"]["scores"] = elements
                 
-                # 解析强弱值
+                # 解析强弱值和中值
                 if "强弱:" in line:
                     strength_match = re.search(r'强弱:(\d+)', line)
                     if strength_match:
                         result["five_elements"]["strength"] = int(strength_match.group(1))
+                    
+                    # 解析中值
+                    middle_match = re.search(r'中值(\d+)', line)
+                    if middle_match:
+                        result["five_elements"]["middle_value"] = int(middle_match.group(1))
+                
+                # 解析强根信息
+                if "强根:" in line:
+                    strong_root_match = re.search(r'强根:\s*([^\s]*)', line)
+                    if strong_root_match:
+                        result["five_elements"]["strong_root"] = strong_root_match.group(1) or "无"
+                
+                # 解析湿度信息
+                if "湿度" in line:
+                    humidity_match = re.search(r'湿度\[([^\]]+)\]', line)
+                    if humidity_match:
+                        result["analysis"]["humidity"] = humidity_match.group(1)
+                
+                # 解析十神信息（比、官、杀等）
+                if re.search(r'[比劫食伤才财杀官枭印]', line) and len(line.strip().split()) <= 8:
+                    # 可能是十神行
+                    ten_gods = line.strip().split()
+                    if len(ten_gods) <= 8 and all(len(god) <= 2 for god in ten_gods):
+                        result["analysis"]["ten_gods"] = ten_gods
             
             # 如果没有找到四柱，尝试从其他格式解析
             if not result["four_pillars"]:
-                # 寻找天干地支组合的行
+                heavenly_stems = None
+                earthly_branches = None
+                
                 for line in lines:
-                    # 匹配类似 "庚 辛 庚 癸" 和 "午 巳 辰 未" 的行
+                    # 匹配天干行
                     if re.match(r'^[甲乙丙丁戊己庚辛壬癸]\s+[甲乙丙丁戊己庚辛壬癸]\s+[甲乙丙丁戊己庚辛壬癸]\s+[甲乙丙丁戊己庚辛壬癸]', line.strip()):
                         heavenly_stems = line.strip().split()[:4]
-                        # 寻找对应的地支行
-                        for next_line in lines:
-                            if re.match(r'^[子丑寅卯辰巳午未申酉戌亥]\s+[子丑寅卯辰巳午未申酉戌亥]\s+[子丑寅卯辰巳午未申酉戌亥]\s+[子丑寅卯辰巳午未申酉戌亥]', next_line.strip()):
-                                earthly_branches = next_line.strip().split()[:4]
-                                if len(heavenly_stems) == 4 and len(earthly_branches) == 4:
-                                    result["four_pillars"] = {
-                                        "year": heavenly_stems[0] + earthly_branches[0],
-                                        "month": heavenly_stems[1] + earthly_branches[1],
-                                        "day": heavenly_stems[2] + earthly_branches[2],
-                                        "hour": heavenly_stems[3] + earthly_branches[3]
-                                    }
-                                break
-                        break
+                    
+                    # 匹配地支行
+                    elif re.match(r'^[子丑寅卯辰巳午未申酉戌亥]\s+[子丑寅卯辰巳午未申酉戌亥]\s+[子丑寅卯辰巳午未申酉戌亥]\s+[子丑寅卯辰巳午未申酉戌亥]', line.strip()):
+                        earthly_branches = line.strip().split()[:4]
+                
+                # 组合天干地支
+                if heavenly_stems and earthly_branches and len(heavenly_stems) == 4 and len(earthly_branches) == 4:
+                    result["four_pillars"] = {
+                        "year": heavenly_stems[0] + earthly_branches[0],
+                        "month": heavenly_stems[1] + earthly_branches[1],
+                        "day": heavenly_stems[2] + earthly_branches[2],
+                        "hour": heavenly_stems[3] + earthly_branches[3]
+                    }
             
             return result
             

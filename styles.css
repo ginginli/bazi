@@ -519,6 +519,13 @@ body {
     color: var(--text-light);
 }
 
+.element-status {
+    font-size: 0.8rem;
+    color: var(--accent-gold);
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
 .strength-indicator {
     text-align: center;
     font-size: 1.1rem;

@@ -183,7 +183,7 @@ class BaziCalculator {
         
         // 显示五行分析
         if (data.five_elements && data.five_elements.scores) {
-            this.displayFiveElements(data.five_elements.scores);
+            this.displayFiveElements(data.five_elements.scores, data.five_elements.status);
             
             if (data.five_elements.strength) {
                 document.getElementById('chartStrength').textContent = data.five_elements.strength;
@@ -191,6 +191,14 @@ class BaziCalculator {
                 // 显示强弱平衡状态
                 const balance = this.analyzeElementBalance(data.five_elements.scores, data.five_elements.strength);
                 document.getElementById('elementBalance').textContent = balance;
+            }
+            
+            // 显示中值和强根信息
+            if (data.five_elements.middle_value) {
+                const strengthElement = document.getElementById('chartStrength');
+                if (strengthElement) {
+                    strengthElement.textContent = `${data.five_elements.strength} (中值: ${data.five_elements.middle_value})`;
+                }
             }
         }
         
@@ -207,6 +215,28 @@ class BaziCalculator {
         if (data.basic_info) {
             document.getElementById('gregorianDate').textContent = data.basic_info.gregorian_date || '--';
             document.getElementById('lunarDate').textContent = data.basic_info.lunar_date || '--';
+            
+            // 显示命宫信息
+            if (data.basic_info.life_palace) {
+                document.getElementById('lifePalace').textContent = data.basic_info.life_palace;
+            }
+            
+            // 显示身宫信息
+            if (data.basic_info.body_palace) {
+                document.getElementById('bodyPalace').textContent = data.basic_info.body_palace;
+            }
+            
+            // 显示胎元信息
+            if (data.basic_info.taiyuan) {
+                document.getElementById('taiyuan').textContent = data.basic_info.taiyuan;
+            }
+            
+            // 显示节气信息
+            if (data.basic_info.solar_terms) {
+                document.getElementById('solarTerms').textContent = data.basic_info.solar_terms;
+            } else if (data.basic_info.lichun_time) {
+                document.getElementById('solarTerms').textContent = data.basic_info.lichun_time;
+            }
             
             // 从原始输出中提取更多信息
             this.extractAdditionalInfo(data.raw_output);
@@ -278,8 +308,17 @@ class BaziCalculator {
         const tenGodsGrid = document.getElementById('tenGodsGrid');
         tenGodsGrid.innerHTML = '';
         
-        // 从原始输出中提取十神信息
-        const tenGods = this.extractTenGods(data.raw_output);
+        // 优先使用解析出的十神信息
+        let tenGods = [];
+        if (data.analysis && data.analysis.ten_gods) {
+            tenGods = data.analysis.ten_gods.map(god => ({
+                name: this.getTenGodFullName(god),
+                value: god
+            }));
+        } else {
+            // 从原始输出中提取十神信息
+            tenGods = this.extractTenGods(data.raw_output);
+        }
         
         tenGods.forEach(god => {
             const godItem = document.createElement('div');
@@ -290,6 +329,22 @@ class BaziCalculator {
             `;
             tenGodsGrid.appendChild(godItem);
         });
+    }
+    
+    getTenGodFullName(shortName) {
+        const godNames = {
+            '比': '比肩',
+            '劫': '劫财', 
+            '食': '食神',
+            '伤': '伤官',
+            '才': '偏财',
+            '财': '正财',
+            '杀': '七杀',
+            '官': '正官',
+            '枭': '偏印',
+            '印': '正印'
+        };
+        return godNames[shortName] || shortName;
     }
     
     extractTenGods(rawOutput) {
@@ -485,7 +540,7 @@ class BaziCalculator {
         }
     }
     
-    displayFiveElements(scores) {
+    displayFiveElements(scores, status) {
         const elementsChart = document.getElementById('elementsChart');
         elementsChart.innerHTML = '';
         
@@ -499,12 +554,15 @@ class BaziCalculator {
         
         elements.forEach(element => {
             const score = scores[element.key] || 0;
+            const elementStatus = status && status[element.key] ? status[element.key] : '';
+            
             const elementBar = document.createElement('div');
             elementBar.className = 'element-bar';
             elementBar.style.borderLeftColor = element.color;
             elementBar.innerHTML = `
                 <div class="element-name">${element.name}</div>
                 <div class="element-score">${score}</div>
+                ${elementStatus ? `<div class="element-status">${elementStatus}</div>` : ''}
             `;
             elementsChart.appendChild(elementBar);
         });
