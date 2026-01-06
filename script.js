@@ -609,6 +609,52 @@ class BaziCalculator {
         this.displayStrengthInterpretation(data);
     }
     
+    displayStrengthInterpretation(data) {
+        // 根据八字强弱提供解读和建议
+        const strengthImpactElement = document.getElementById('strengthImpact');
+        const strengthRecommendationsElement = document.getElementById('strengthRecommendations');
+        
+        const strength = data.five_elements && data.five_elements.strength;
+        const isWeak = data.five_elements && data.five_elements.weak;
+        const humidityScore = data.five_elements && data.five_elements.humidity_score;
+        
+        let interpretation = '';
+        let recommendations = '';
+        
+        if (isWeak) {
+            interpretation = `Your bazi chart shows a weak constitution (偏弱), meaning your day master needs support from helpful elements. This indicates you benefit from collaboration, supportive relationships, and environments that nurture your natural talents.`;
+            recommendations = `• Seek supportive partnerships and mentorship<br>
+• Focus on building steady foundations rather than rapid expansion<br>  
+• Cultivate patience and persistence in your endeavors<br>
+• Surround yourself with people who appreciate your qualities`;
+        } else {
+            interpretation = `Your bazi chart shows a strong constitution (偏强), meaning your day master has abundant energy and self-reliance. This indicates natural leadership abilities and the capacity to overcome challenges independently.`;
+            recommendations = `• Channel your energy into meaningful projects and goals<br>
+• Practice moderation to avoid overwhelming others<br>
+• Use your strength to help and guide those around you<br>
+• Balance confidence with humility and openness to feedback`;
+        }
+        
+        // 湿度影响解读
+        if (humidityScore !== undefined) {
+            if (humidityScore < -3) {
+                interpretation += ` Your chart tends toward cold and wet conditions, suggesting you benefit from warmth, activity, and energizing environments.`;
+            } else if (humidityScore > 3) {
+                interpretation += ` Your chart tends toward hot and dry conditions, suggesting you benefit from cooling, calming, and moistening influences.`;
+            } else {
+                interpretation += ` Your chart shows balanced humidity conditions, indicating good adaptability to different environments.`;
+            }
+        }
+        
+        if (strengthImpactElement) {
+            strengthImpactElement.innerHTML = interpretation;
+        }
+        
+        if (strengthRecommendationsElement) {
+            strengthRecommendationsElement.innerHTML = recommendations;
+        }
+    }
+    
     displayPatternAnalysis(data) {
         // 显示格局分析
         this.displayPatterns(data);
