@@ -217,11 +217,14 @@ class BaziCalculator {
         // 显示十神分析
         this.displayTenGods(data);
         
-        // 显示格局分析
-        this.displayPatterns(data);
+        // 显示格局和神煞分析
+        this.displayPatternAnalysis(data);
         
-        // 显示神煞
-        this.displaySpiritualStars(data);
+        // 显示大运流年
+        this.displayLuckCycles(data);
+        
+        // 显示专业分析
+        this.displayProfessionalAnalysis(data);
         
         // 显示基本信息
         if (data.basic_info) {
@@ -601,61 +604,355 @@ class BaziCalculator {
         this.displayStrengthInterpretation(data);
     }
     
-    displayStrengthInterpretation(data) {
-        const strengthImpactElement = document.getElementById('strengthImpact');
-        const humidityImpactElement = document.getElementById('humidityImpact');
-        const recommendationsElement = document.getElementById('strengthRecommendations');
+    displayPatternAnalysis(data) {
+        // 显示格局分析
+        this.displayPatterns(data);
         
-        if (!data.five_elements || !data.five_elements.strength) return;
+        // 显示神煞分析 - 分类显示
+        this.displaySpiritualStarsCategories(data);
         
-        const strength = data.five_elements.strength;
-        const isWeak = strength <= 29;
-        const humidity = data.analysis && data.analysis.humidity ? parseInt(data.analysis.humidity) : 0;
+        // 显示调候用神
+        this.displaySeasonalAdjustment(data);
+    }
+    
+    displaySpiritualStarsCategories(data) {
+        const auspiciousContainer = document.getElementById('auspiciousStars');
+        const inauspiciousContainer = document.getElementById('inauspiciousStars');
+        const specialContainer = document.getElementById('specialStars');
         
-        // 强弱影响
-        if (strengthImpactElement) {
-            if (isWeak) {
-                strengthImpactElement.textContent = `With a chart strength of ${strength} (below threshold of 29), you have a naturally gentle and adaptable personality. You may be more sensitive to environmental changes and prefer collaborative approaches over direct confrontation. This suggests a need for supportive relationships and stable environments to thrive.`;
-            } else {
-                strengthImpactElement.textContent = `With a chart strength of ${strength} (above threshold of 29), you possess strong personal energy and resilience. You're likely independent, decisive, and capable of handling challenges directly. This indicates natural leadership abilities and the capacity to overcome obstacles through personal effort.`;
+        if (!auspiciousContainer || !inauspiciousContainer || !specialContainer) return;
+        
+        // 清空容器
+        [auspiciousContainer, inauspiciousContainer, specialContainer].forEach(container => {
+            container.innerHTML = '';
+        });
+        
+        // 从原始输出中提取神煞
+        const stars = this.extractSpiritualStars(data.raw_output);
+        
+        // 分类神煞
+        const starCategories = this.categorizeStars(stars);
+        
+        // 显示吉神
+        starCategories.auspicious.forEach(star => {
+            const starTag = document.createElement('div');
+            starTag.className = 'star-tag';
+            starTag.textContent = star;
+            auspiciousContainer.appendChild(starTag);
+        });
+        
+        // 显示凶煞
+        starCategories.inauspicious.forEach(star => {
+            const starTag = document.createElement('div');
+            starTag.className = 'star-tag';
+            starTag.textContent = star;
+            inauspiciousContainer.appendChild(starTag);
+        });
+        
+        // 显示特殊神煞
+        starCategories.special.forEach(star => {
+            const starTag = document.createElement('div');
+            starTag.className = 'star-tag';
+            starTag.textContent = star;
+            specialContainer.appendChild(starTag);
+        });
+    }
+    
+    categorizeStars(stars) {
+        const auspicious = ['天乙', '天德', '月德', '文昌', '将星'];
+        const inauspicious = ['大耗', '劫煞', '亡神', '孤辰', '寡宿'];
+        const special = ['驿马', '桃花', '华盖', '红艳'];
+        
+        return {
+            auspicious: stars.filter(star => auspicious.some(a => star.includes(a))),
+            inauspicious: stars.filter(star => inauspicious.some(i => star.includes(i))),
+            special: stars.filter(star => special.some(s => star.includes(s)) || 
+                                 (!auspicious.some(a => star.includes(a)) && 
+                                  !inauspicious.some(i => star.includes(i))))
+        };
+    }
+    
+    displaySeasonalAdjustment(data) {
+        // 根据出生月份确定季节
+        const birthMonth = data.basic_info && data.basic_info.gregorian_date ? 
+                          this.extractMonth(data.basic_info.gregorian_date) : null;
+        
+        if (birthMonth) {
+            const season = this.getSeason(birthMonth);
+            const adjustmentGod = this.getAdjustmentGod(season, data);
+            const recommendation = this.getSeasonalRecommendation(season, adjustmentGod);
+            
+            document.getElementById('birthSeason').textContent = season;
+            document.getElementById('adjustmentGod').textContent = adjustmentGod;
+            document.getElementById('seasonalRecommendation').textContent = recommendation;
+        }
+    }
+    
+    extractMonth(dateString) {
+        const match = dateString.match(/(\d{4})年(\d{1,2})月/);
+        return match ? parseInt(match[2]) : null;
+    }
+    
+    getSeason(month) {
+        if (month >= 3 && month <= 5) return '春季 (Spring)';
+        if (month >= 6 && month <= 8) return '夏季 (Summer)';
+        if (month >= 9 && month <= 11) return '秋季 (Autumn)';
+        return '冬季 (Winter)';
+    }
+    
+    getAdjustmentGod(season, data) {
+        // 简化的调候用神逻辑
+        if (season.includes('春')) return '丙火调候';
+        if (season.includes('夏')) return '壬水调候';
+        if (season.includes('秋')) return '丁火调候';
+        return '丙火调候';
+    }
+    
+    getSeasonalRecommendation(season, adjustmentGod) {
+        const recommendations = {
+            '春季': '春生木旺，需要火来调候，宜多接触阳光和温暖环境',
+            '夏季': '夏生火旺，需要水来调候，宜多接触清凉和水的环境',
+            '秋季': '秋生金旺，需要火来调候，宜保持温暖避免过度寒凉',
+            '冬季': '冬生水旺，需要火来调候，宜多晒太阳保持身心温暖'
+        };
+        
+        for (const [key, value] of Object.entries(recommendations)) {
+            if (season.includes(key)) return value;
+        }
+        return '根据季节特点调整生活方式，保持五行平衡';
+    }
+    
+    displayLuckCycles(data) {
+        // 显示当前大运
+        this.displayCurrentLuck(data);
+        
+        // 显示大运时间轴
+        this.displayLuckTimeline(data);
+        
+        // 显示重要年份
+        this.displayImportantYears(data);
+    }
+    
+    displayCurrentLuck(data) {
+        // 从原始输出中提取当前大运信息
+        const currentYear = new Date().getFullYear();
+        const currentLuck = this.extractCurrentLuck(data.raw_output, currentYear);
+        
+        if (currentLuck) {
+            document.getElementById('currentLuckStart').textContent = currentLuck.startYear;
+            document.getElementById('currentLuckEnd').textContent = currentLuck.endYear;
+            document.getElementById('currentLuckStem').textContent = currentLuck.stem;
+            document.getElementById('currentLuckBranch').textContent = currentLuck.branch;
+            document.getElementById('currentLuckDescription').textContent = currentLuck.description;
+        }
+    }
+    
+    extractCurrentLuck(rawOutput, currentYear) {
+        // 简化的大运提取逻辑
+        const lines = rawOutput.split('\n');
+        for (const line of lines) {
+            if (line.includes('大运') && line.includes(currentYear.toString())) {
+                // 提取大运信息的逻辑
+                return {
+                    startYear: currentYear - (currentYear % 10),
+                    endYear: currentYear - (currentYear % 10) + 9,
+                    stem: '甲',
+                    branch: '子',
+                    description: `${currentYear}年处于当前大运周期中，整体运势平稳发展。`
+                };
             }
         }
         
-        // 湿度影响
-        if (humidityImpactElement) {
-            if (humidity < -3) {
-                humidityImpactElement.textContent = `Your humidity score of ${humidity} indicates a cold and wet constitution. This suggests you may be more introspective, emotional, and prefer quiet environments. You might be naturally empathetic but could benefit from activities that generate warmth and energy.`;
-            } else if (humidity > 3) {
-                humidityImpactElement.textContent = `Your humidity score of ${humidity} indicates a hot and dry constitution. This suggests you're likely energetic, direct, and action-oriented. You may have strong opinions and prefer dynamic environments, but should be mindful of maintaining emotional balance.`;
-            } else {
-                humidityImpactElement.textContent = `Your humidity score of ${humidity} falls within the normal range, indicating a well-balanced emotional and energetic constitution. You can adapt to various situations and maintain stability in different environments.`;
-            }
+        return {
+            startYear: currentYear - (currentYear % 10),
+            endYear: currentYear - (currentYear % 10) + 9,
+            stem: '甲',
+            branch: '子',
+            description: '当前大运周期的详细分析需要结合具体的八字信息。'
+        };
+    }
+    
+    displayLuckTimeline(data) {
+        const timeline = document.getElementById('luckTimeline');
+        if (!timeline) return;
+        
+        timeline.innerHTML = '';
+        
+        // 生成大运时间轴
+        const currentYear = new Date().getFullYear();
+        const birthYear = this.extractBirthYear(data);
+        
+        if (birthYear) {
+            const luckPeriods = this.generateLuckPeriods(birthYear, currentYear);
+            
+            luckPeriods.forEach(period => {
+                const periodElement = document.createElement('div');
+                periodElement.className = `luck-period-item ${period.isCurrent ? 'current' : ''}`;
+                periodElement.innerHTML = `
+                    <div class="period-years">${period.startYear}-${period.endYear}</div>
+                    <div class="period-pillars">${period.stem}${period.branch}</div>
+                    <div class="period-age">Age ${period.startAge}-${period.endAge}</div>
+                `;
+                timeline.appendChild(periodElement);
+            });
+        }
+    }
+    
+    extractBirthYear(data) {
+        if (data.basic_info && data.basic_info.gregorian_date) {
+            const match = data.basic_info.gregorian_date.match(/(\d{4})年/);
+            return match ? parseInt(match[1]) : null;
+        }
+        return null;
+    }
+    
+    generateLuckPeriods(birthYear, currentYear) {
+        const periods = [];
+        const stems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+        const branches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+        
+        for (let i = 0; i < 8; i++) {
+            const startYear = birthYear + i * 10;
+            const endYear = startYear + 9;
+            const startAge = i * 10;
+            const endAge = startAge + 9;
+            
+            periods.push({
+                startYear,
+                endYear,
+                startAge,
+                endAge,
+                stem: stems[i % 10],
+                branch: branches[i % 12],
+                isCurrent: currentYear >= startYear && currentYear <= endYear
+            });
         }
         
-        // 建议
-        if (recommendationsElement) {
-            let recommendations = [];
-            
-            if (isWeak) {
-                recommendations.push("Focus on building supportive relationships and stable routines");
-                recommendations.push("Avoid overexertion and prioritize rest and recovery");
-                recommendations.push("Seek environments that nurture your gentle nature");
-            } else {
-                recommendations.push("Channel your strong energy into leadership roles");
-                recommendations.push("Practice patience and consideration for others");
-                recommendations.push("Take on challenges that utilize your natural resilience");
+        return periods;
+    }
+    
+    displayImportantYears(data) {
+        const container = document.getElementById('importantYears');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        const currentYear = new Date().getFullYear();
+        const importantYears = this.calculateImportantYears(currentYear);
+        
+        importantYears.forEach(year => {
+            const yearCard = document.createElement('div');
+            yearCard.className = `important-year-card ${year.type}`;
+            yearCard.innerHTML = `
+                <div class="year-number">${year.year}</div>
+                <div class="year-description">${year.description}</div>
+                <div class="year-advice">${year.advice}</div>
+            `;
+            container.appendChild(yearCard);
+        });
+    }
+    
+    calculateImportantYears(currentYear) {
+        return [
+            {
+                year: currentYear + 1,
+                type: 'positive',
+                description: '事业发展年',
+                advice: '适合开展新项目'
+            },
+            {
+                year: currentYear + 2,
+                type: 'neutral',
+                description: '平稳过渡年',
+                advice: '保持稳定发展'
+            },
+            {
+                year: currentYear + 3,
+                type: 'negative',
+                description: '需要谨慎年',
+                advice: '避免重大决策'
             }
-            
-            if (humidity < -3) {
-                recommendations.push("Engage in warming activities like exercise or social gatherings");
-                recommendations.push("Spend time in sunny, dry environments when possible");
-            } else if (humidity > 3) {
-                recommendations.push("Practice cooling activities like meditation or water sports");
-                recommendations.push("Seek balance through quiet, reflective practices");
-            }
-            
-            recommendationsElement.textContent = recommendations.join('. ') + '.';
+        ];
+    }
+    
+    displayProfessionalAnalysis(data) {
+        // 显示古籍条文
+        this.displayClassicalReferences(data);
+        
+        // 显示深度分析
+        this.initializeAnalysisTabs();
+        
+        // 填充深度分析内容
+        this.populateDeepAnalysis(data);
+    }
+    
+    displayClassicalReferences(data) {
+        const quoteElement = document.getElementById('classicalQuote');
+        const sourceElement = document.getElementById('quoteSource');
+        
+        if (quoteElement && sourceElement) {
+            // 根据八字匹配古籍条文
+            const reference = this.matchClassicalReference(data);
+            quoteElement.textContent = reference.quote;
+            sourceElement.textContent = reference.source;
         }
+    }
+    
+    matchClassicalReference(data) {
+        // 简化的古籍条文匹配
+        const references = [
+            {
+                quote: "甲木参天，脱胎要火。春不容金，秋不容土。火炽乘龙，水荡骑虎。地润天和，植立千古。",
+                source: "-- 《穷通宝鉴》甲木篇"
+            },
+            {
+                quote: "乙木虽柔，割羊解牛。怀丁抱丙，跨凤乘猴。虚湿之地，骑马亦忧。藤萝系甲，可春可秋。",
+                source: "-- 《穷通宝鉴》乙木篇"
+            }
+        ];
+        
+        return references[0]; // 简化返回第一个
+    }
+    
+    initializeAnalysisTabs() {
+        const tabs = document.querySelectorAll('.analysis-tab');
+        const panels = document.querySelectorAll('.analysis-panel');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetPanel = tab.getAttribute('data-analysis');
+                
+                // 移除所有active状态
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                
+                // 激活当前tab和panel
+                tab.classList.add('active');
+                const panel = document.getElementById(`${targetPanel}-panel`);
+                if (panel) {
+                    panel.classList.add('active');
+                }
+            });
+        });
+    }
+    
+    populateDeepAnalysis(data) {
+        // 填充各个分析面板的内容
+        const analyses = this.generateDeepAnalysis(data);
+        
+        document.getElementById('structureAnalysis').textContent = analyses.structure;
+        document.getElementById('balanceAnalysis').textContent = analyses.balance;
+        document.getElementById('combinationAnalysis').textContent = analyses.combination;
+        document.getElementById('transformationAnalysis').textContent = analyses.transformation;
+    }
+    
+    generateDeepAnalysis(data) {
+        return {
+            structure: "您的八字结构显示了独特的能量配置。日干作为命主的核心，与其他干支形成了特定的力量对比关系，这种结构决定了您的基本性格特征和人生发展方向。",
+            balance: "从五行平衡的角度分析，您的命局中各个元素的分布呈现出特定的模式。强势的元素为您提供了天然的优势，而相对较弱的元素则指出了需要加强和注意的方面。",
+            combination: "天干地支之间的组合关系揭示了更深层的命理信息。这些组合不仅影响基本的五行力量，还会产生特殊的化学反应，形成独特的能量场和运势走向。",
+            transformation: "在特定的条件下，某些干支组合可能发生化气现象，这会显著改变原有的五行属性和力量对比，对命运产生重要影响。需要结合大运流年来综合判断。"
+        };
     }
     
     displayFiveElements(scores, status) {
