@@ -218,6 +218,9 @@ class BaziCalculator {
         // 显示生活指导
         this.displayLifeGuidance(data);
         
+        // 更新概览部分的摘要卡片
+        this.updateSummaryCards(data);
+        
         // 显示原始输出（调试用）
         if (data.raw_output) {
             document.getElementById('rawOutput').textContent = data.raw_output;
@@ -225,6 +228,11 @@ class BaziCalculator {
         
         // 显示结果容器
         this.resultsContainer.style.display = 'block';
+        
+        // 确保概览标签页是激活状态
+        if (window.breadcrumbNav) {
+            window.breadcrumbNav.switchToSection('overview');
+        }
         
         // 滚动到结果区域
         this.resultsContainer.scrollIntoView({ behavior: 'smooth' });
@@ -442,6 +450,41 @@ class BaziCalculator {
         };
     }
     
+    updateSummaryCards(data) {
+        // Update chart strength summary
+        const strengthElement = document.getElementById('summaryStrength');
+        if (strengthElement && data.five_elements && data.five_elements.strength) {
+            strengthElement.textContent = data.five_elements.strength;
+        }
+        
+        // Update element balance summary
+        const balanceElement = document.getElementById('summaryBalance');
+        if (balanceElement && data.five_elements && data.five_elements.scores) {
+            const balance = this.analyzeElementBalance(data.five_elements.scores, data.five_elements.strength);
+            balanceElement.textContent = balance;
+        }
+        
+        // Update primary pattern summary
+        const patternElement = document.getElementById('summaryPattern');
+        if (patternElement) {
+            let primaryPattern = '--';
+            
+            if (data.analysis && data.analysis.patterns) {
+                primaryPattern = data.analysis.patterns[0] || '--';
+            } else if (data.raw_output) {
+                const patternMatch = data.raw_output.match(/格局选用：([^\\n]+)/);
+                if (patternMatch) {
+                    const patterns = patternMatch[1].split(/[：；]/);
+                    if (patterns.length > 1) {
+                        primaryPattern = patterns[1].trim();
+                    }
+                }
+            }
+            
+            patternElement.textContent = primaryPattern;
+        }
+    }
+    
     displayFiveElements(scores) {
         const elementsChart = document.getElementById('elementsChart');
         elementsChart.innerHTML = '';
@@ -480,10 +523,59 @@ class BaziCalculator {
     }
 }
 
+// Breadcrumb Navigation Functionality
+class BreadcrumbNavigation {
+    constructor() {
+        this.tabs = document.querySelectorAll('.breadcrumb-tab');
+        this.sections = document.querySelectorAll('.result-section');
+        this.initializeEventListeners();
+    }
+    
+    initializeEventListeners() {
+        this.tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => this.handleTabClick(e));
+        });
+    }
+    
+    handleTabClick(event) {
+        const clickedTab = event.currentTarget;
+        const targetSection = clickedTab.getAttribute('data-section');
+        
+        // Remove active class from all tabs
+        this.tabs.forEach(tab => tab.classList.remove('active'));
+        
+        // Add active class to clicked tab
+        clickedTab.classList.add('active');
+        
+        // Hide all sections
+        this.sections.forEach(section => section.classList.remove('active'));
+        
+        // Show target section
+        const targetSectionElement = document.getElementById(`section-${targetSection}`);
+        if (targetSectionElement) {
+            targetSectionElement.classList.add('active');
+        }
+    }
+    
+    // Method to programmatically switch to a section
+    switchToSection(sectionName) {
+        const targetTab = document.querySelector(`[data-section="${sectionName}"]`);
+        if (targetTab) {
+            targetTab.click();
+        }
+    }
+}
+
 // Initialize calculator when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Bazi Calculator
     const calculator = new BaziCalculator();
+    
+    // Initialize Breadcrumb Navigation
+    const breadcrumbNav = new BreadcrumbNavigation();
+    
+    // Make breadcrumb navigation globally accessible
+    window.breadcrumbNav = breadcrumbNav;
     
     // Legacy placeholder functionality
     const calculatorPlaceholder = document.querySelector('.calculator-placeholder');
