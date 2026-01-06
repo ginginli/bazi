@@ -211,6 +211,9 @@ class BaziCalculator {
             this.showElementsImage();
         }
         
+        // 显示强弱分析
+        this.displayStrengthAnalysis(data);
+        
         // 显示十神分析
         this.displayTenGods(data);
         
@@ -547,6 +550,111 @@ class BaziCalculator {
         const imageContainer = document.getElementById('elementsImage');
         if (imageContainer) {
             imageContainer.style.display = 'block';
+        }
+    }
+    
+    displayStrengthAnalysis(data) {
+        // 显示总分数
+        const totalScoreElement = document.getElementById('strengthTotalScore');
+        if (totalScoreElement && data.five_elements && data.five_elements.strength) {
+            totalScoreElement.textContent = data.five_elements.strength;
+        }
+        
+        // 显示强弱分类
+        const classificationElement = document.getElementById('strengthClassification');
+        if (classificationElement && data.five_elements && data.five_elements.strength) {
+            const strength = data.five_elements.strength;
+            const isWeak = strength <= 29;
+            classificationElement.textContent = isWeak ? 'Weak (偏弱)' : 'Strong (偏强)';
+            classificationElement.style.color = isWeak ? '#dc2626' : '#059669';
+        }
+        
+        // 显示湿度分数
+        const humidityScoreElement = document.getElementById('humidityScore');
+        if (humidityScoreElement && data.analysis && data.analysis.humidity) {
+            humidityScoreElement.textContent = data.analysis.humidity;
+        }
+        
+        // 显示湿度状态
+        const humidityConditionElement = document.getElementById('humidityCondition');
+        if (humidityConditionElement && data.analysis && data.analysis.humidity) {
+            const humidity = parseInt(data.analysis.humidity);
+            let condition = 'Normal';
+            let color = '#059669';
+            
+            if (humidity < -3) {
+                condition = 'Cold & Wet (偏寒湿)';
+                color = '#1d4ed8';
+            } else if (humidity > 3) {
+                condition = 'Hot & Dry (偏燥热)';
+                color = '#dc2626';
+            } else {
+                condition = 'Balanced (平衡)';
+                color = '#059669';
+            }
+            
+            humidityConditionElement.textContent = condition;
+            humidityConditionElement.style.color = color;
+        }
+        
+        // 显示强弱影响解读
+        this.displayStrengthInterpretation(data);
+    }
+    
+    displayStrengthInterpretation(data) {
+        const strengthImpactElement = document.getElementById('strengthImpact');
+        const humidityImpactElement = document.getElementById('humidityImpact');
+        const recommendationsElement = document.getElementById('strengthRecommendations');
+        
+        if (!data.five_elements || !data.five_elements.strength) return;
+        
+        const strength = data.five_elements.strength;
+        const isWeak = strength <= 29;
+        const humidity = data.analysis && data.analysis.humidity ? parseInt(data.analysis.humidity) : 0;
+        
+        // 强弱影响
+        if (strengthImpactElement) {
+            if (isWeak) {
+                strengthImpactElement.textContent = `With a chart strength of ${strength} (below threshold of 29), you have a naturally gentle and adaptable personality. You may be more sensitive to environmental changes and prefer collaborative approaches over direct confrontation. This suggests a need for supportive relationships and stable environments to thrive.`;
+            } else {
+                strengthImpactElement.textContent = `With a chart strength of ${strength} (above threshold of 29), you possess strong personal energy and resilience. You're likely independent, decisive, and capable of handling challenges directly. This indicates natural leadership abilities and the capacity to overcome obstacles through personal effort.`;
+            }
+        }
+        
+        // 湿度影响
+        if (humidityImpactElement) {
+            if (humidity < -3) {
+                humidityImpactElement.textContent = `Your humidity score of ${humidity} indicates a cold and wet constitution. This suggests you may be more introspective, emotional, and prefer quiet environments. You might be naturally empathetic but could benefit from activities that generate warmth and energy.`;
+            } else if (humidity > 3) {
+                humidityImpactElement.textContent = `Your humidity score of ${humidity} indicates a hot and dry constitution. This suggests you're likely energetic, direct, and action-oriented. You may have strong opinions and prefer dynamic environments, but should be mindful of maintaining emotional balance.`;
+            } else {
+                humidityImpactElement.textContent = `Your humidity score of ${humidity} falls within the normal range, indicating a well-balanced emotional and energetic constitution. You can adapt to various situations and maintain stability in different environments.`;
+            }
+        }
+        
+        // 建议
+        if (recommendationsElement) {
+            let recommendations = [];
+            
+            if (isWeak) {
+                recommendations.push("Focus on building supportive relationships and stable routines");
+                recommendations.push("Avoid overexertion and prioritize rest and recovery");
+                recommendations.push("Seek environments that nurture your gentle nature");
+            } else {
+                recommendations.push("Channel your strong energy into leadership roles");
+                recommendations.push("Practice patience and consideration for others");
+                recommendations.push("Take on challenges that utilize your natural resilience");
+            }
+            
+            if (humidity < -3) {
+                recommendations.push("Engage in warming activities like exercise or social gatherings");
+                recommendations.push("Spend time in sunny, dry environments when possible");
+            } else if (humidity > 3) {
+                recommendations.push("Practice cooling activities like meditation or water sports");
+                recommendations.push("Seek balance through quiet, reflective practices");
+            }
+            
+            recommendationsElement.textContent = recommendations.join('. ') + '.';
         }
     }
     

@@ -161,7 +161,16 @@ class BaziCalculator:
                 if "湿度" in line:
                     humidity_match = re.search(r'湿度\[([^\]]+)\]', line)
                     if humidity_match:
-                        result["analysis"]["humidity"] = humidity_match.group(1)
+                        result["analysis"]["humidity_range"] = humidity_match.group(1)
+                    
+                    # 提取湿度分数
+                    humidity_score_match = re.search(r'湿度分数[：:]\s*([+-]?\d+)', line)
+                    if humidity_score_match:
+                        result["analysis"]["humidity"] = humidity_score_match.group(1)
+                    elif re.search(r'([+-]?\d+)\s*湿度', line):
+                        score_match = re.search(r'([+-]?\d+)\s*湿度', line)
+                        if score_match:
+                            result["analysis"]["humidity"] = score_match.group(1)
                 
                 # 解析十神信息（比、官、杀等）
                 if re.search(r'[比劫食伤才财杀官枭印]', line) and len(line.strip().split()) <= 8:

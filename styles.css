@@ -1557,28 +1557,242 @@ h4, h5, h6 {
     font-weight: 600;
 }
 
+/* Chart Strength Analysis */
+.strength-analysis-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.strength-analysis-section h4 {
+    color: var(--accent-gold);
+    margin-bottom: 1rem;
+}
+
+.strength-overview {
+    margin-bottom: 2rem;
+}
+
+.strength-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.strength-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.strength-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.strength-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.strength-content {
+    flex: 1;
+}
+
+.strength-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.strength-value {
+    color: var(--accent-gold);
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.strength-desc {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Humidity Analysis */
+.humidity-analysis {
+    margin-bottom: 2rem;
+}
+
+.humidity-analysis h5 {
+    color: var(--accent-gold);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.humidity-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.humidity-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(29, 78, 216, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.humidity-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(29, 78, 216, 0.2);
+}
+
+.humidity-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.humidity-content {
+    flex: 1;
+}
+
+.humidity-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+.humidity-value {
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+}
+
+.humidity-desc {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+/* Strength Interpretation */
+.strength-interpretation h5 {
+    color: var(--accent-gold);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.interpretation-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.interpretation-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.interpretation-card h6 {
+    color: var(--primary-purple);
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.interpretation-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Ten Gods Explanation */
+.tengods-explanation {
+    margin-top: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tengods-explanation h5 {
+    color: var(--accent-gold);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.tengods-info p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.tengods-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.tengods-category {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid rgba(245, 158, 11, 0.1);
+}
+
+.tengods-category h6 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.tengods-category p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.tengods-category strong {
+    color: var(--text-light);
+}
+
 /* Responsive Design for New Components */
 @media (max-width: 768px) {
-    .elements-summary {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .personality-content {
+    .strength-cards {
         grid-template-columns: 1fr;
     }
     
-    .aspects-grid {
+    .humidity-cards {
         grid-template-columns: 1fr;
     }
     
-    .gods-grid {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    .interpretation-content {
+        grid-template-columns: 1fr;
     }
     
-    .pattern-item {
+    .tengods-categories {
+        grid-template-columns: 1fr;
+    }
+    
+    .strength-card,
+    .humidity-card {
         flex-direction: column;
-        align-items: flex-start;
+        text-align: center;
         gap: 0.5rem;
     }
 }
