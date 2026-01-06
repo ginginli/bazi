@@ -264,6 +264,48 @@ body {
     50% { transform: translateY(-20px); }
 }
 
+.share-tools {
+    display: flex;
+    justify-content: flex-end;
+    margin: 12px 0 16px;
+}
+
+.btn-share {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(124, 58, 237, 0.15));
+    color: var(--accent-gold);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-share:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
+}
+
+.share-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--surface-dark) 0%, var(--surface-medium) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 20px;
+    padding: 24px;
+    overflow: hidden;
+}
+
+.share-card svg {
+    width: 100%;
+    height: auto;
+    max-width: 900px;
+    border-radius: 12px;
+}
+
 /* Calculator Section */
 .calculator-section {
     padding: 100px 0;
@@ -796,9 +838,6 @@ body {
 .element:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
-    color: white;
-    font-weight: bold;
 }
 
 .element.wood { background: #27ae60; }

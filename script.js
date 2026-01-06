@@ -60,6 +60,10 @@ class BaziCalculator {
         this.form = document.getElementById('baziForm');
         this.resultsContainer = document.getElementById('calculatorResults');
         this.errorContainer = document.getElementById('errorMessage');
+        this.shareBtn = document.getElementById('generateShareBtn');
+        if (this.shareBtn) {
+            this.shareBtn.addEventListener('click', () => this.generateShareImage());
+        }
         
         this.initializeEventListeners();
     }
@@ -266,6 +270,8 @@ class BaziCalculator {
         
         // 滚动到结果区域
         this.resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        
+        this.buildShareCard(data);
     }
     
     displayPillarElements(pillars) {
@@ -580,6 +586,169 @@ class BaziCalculator {
         this.errorContainer.scrollIntoView({ behavior: 'smooth' });
     }
 }
+
+function createSvgEl(tag, attrs = {}) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    Object.keys(attrs).forEach(k => el.setAttribute(k, attrs[k]));
+    return el;
+}
+
+BaziCalculator.prototype.buildShareCard = function(data) {
+    const svg = document.getElementById('shareSvg');
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    
+    const cx = 540, cy = 540;
+    const bg = createSvgEl('rect', { x: 0, y: 0, width: 1080, height: 1080, rx: 40, fill: '#121326' });
+    svg.appendChild(bg);
+    
+    const defs = createSvgEl('defs');
+    const grad = createSvgEl('linearGradient', { id: 'logoGrad', x1: '0%', y1: '0%', x2: '100%', y2: '0%' });
+    grad.appendChild(createSvgEl('stop', { offset: '0%', 'stop-color': '#f59e0b' }));
+    grad.appendChild(createSvgEl('stop', { offset: '50%', 'stop-color': '#ea580c' }));
+    grad.appendChild(createSvgEl('stop', { offset: '100%', 'stop-color': '#7c3aed' }));
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+    
+    const title = createSvgEl('text', { x: 540, y: 120, 'text-anchor': 'middle', fill: '#f59e0b', 'font-size': '48', 'font-family': 'JetBrains Mono, monospace' });
+    title.textContent = '你的八字能量图谱';
+    svg.appendChild(title);
+    
+    const compassR = 420;
+    const compassBase = createSvgEl('circle', { cx, cy, r: compassR, fill: 'none', stroke: 'rgba(245,158,11,0.25)', 'stroke-width': 2 });
+    svg.appendChild(compassBase);
+    
+    const zhi = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    zhi.forEach((z, i) => {
+        const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
+        const tx = cx + Math.cos(angle) * (compassR + 34);
+        const ty = cy + Math.sin(angle) * (compassR + 34);
+        const tickStartX = cx + Math.cos(angle) * (compassR - 12);
+        const tickStartY = cy + Math.sin(angle) * (compassR - 12);
+        const tickEndX = cx + Math.cos(angle) * (compassR + 12);
+        const tickEndY = cy + Math.sin(angle) * (compassR + 12);
+        const tick = createSvgEl('line', { x1: tickStartX, y1: tickStartY, x2: tickEndX, y2: tickEndY, stroke: 'rgba(245,158,11,0.35)', 'stroke-width': 2 });
+        svg.appendChild(tick);
+        const label = createSvgEl('text', { x: tx, y: ty, fill: '#cbd5e1', 'font-size': '26', 'text-anchor': 'middle', 'dominant-baseline': 'middle' });
+        label.textContent = z;
+        svg.appendChild(label);
+    });
+    
+    const ringR = 360;
+    const scores = (data.five_elements && data.five_elements.scores) ? data.five_elements.scores : { '木': 1, '火': 1, '土': 1, '金': 1, '水': 1 };
+    const order = ['木', '火', '土', '金', '水'];
+    const colors = { '木': '#059669', '火': '#dc2626', '土': '#ea580c', '金': '#64748b', '水': '#1d4ed8' };
+    const total = order.reduce((s, k) => s + (scores[k] || 0), 0) || 1;
+    const circumference = 2 * Math.PI * ringR;
+    
+    const ringBg = createSvgEl('circle', { cx, cy, r: ringR, fill: 'none', stroke: 'rgba(148,163,184,0.15)', 'stroke-width': 28 });
+    svg.appendChild(ringBg);
+    
+    let offset = 0;
+    order.forEach(k => {
+        const value = scores[k] || 0;
+        const segLen = circumference * (value / total);
+        const circle = createSvgEl('circle', {
+            cx, cy, r: ringR, fill: 'none', stroke: colors[k], 'stroke-width': 28,
+            'stroke-linecap': 'round', 'stroke-dasharray': `${segLen} ${circumference - segLen}`,
+            'stroke-dashoffset': `${offset}`, transform: `rotate(-90 ${cx} ${cy})`
+        });
+        svg.appendChild(circle);
+        offset += segLen;
+    });
+    
+    const legendY = 940;
+    order.forEach((k, idx) => {
+        const lx = 180 + idx * 180;
+        const sw = createSvgEl('rect', { x: lx, y: legendY - 22, width: 30, height: 12, rx: 3, fill: colors[k] });
+        const lt = createSvgEl('text', { x: lx + 40, y: legendY - 12, fill: '#e5e7eb', 'font-size': '24' });
+        lt.textContent = `${k} ${scores[k] || 0}`;
+        svg.appendChild(sw);
+        svg.appendChild(lt);
+    });
+    
+    const pillars = data.four_pillars || {};
+    const pillarGroupY = 760;
+    const pw = 220, ph = 120, gap = 30;
+    const labels = [
+        { k: 'year', name: '年柱' },
+        { k: 'month', name: '月柱' },
+        { k: 'day', name: '日柱' },
+        { k: 'hour', name: '时柱' }
+    ];
+    labels.forEach((item, i) => {
+        const x = 90 + i * (pw + gap);
+        const card = createSvgEl('rect', { x, y: pillarGroupY, width: pw, height: ph, rx: 16, fill: 'rgba(248,250,252,0.06)', stroke: 'rgba(245,158,11,0.25)' });
+        svg.appendChild(card);
+        const lt = createSvgEl('text', { x: x + pw / 2, y: pillarGroupY + 40, 'text-anchor': 'middle', fill: '#cbd5e1', 'font-size': '22' });
+        lt.textContent = item.name;
+        svg.appendChild(lt);
+        const val = createSvgEl('text', { x: x + pw / 2, y: pillarGroupY + 80, 'text-anchor': 'middle', fill: '#f8fafc', 'font-size': '36', 'font-family': 'JetBrains Mono, monospace' });
+        val.textContent = pillars[item.k] || '--';
+        svg.appendChild(val);
+    });
+    
+    const pillarColors = { year: '#7c3aed', month: '#ea580c', day: '#f59e0b', hour: '#1d4ed8' };
+    function pickZhi(text) {
+        if (!text) return null;
+        for (let i = text.length - 1; i >= 0; i--) {
+            if (zhi.includes(text[i])) return text[i];
+        }
+        return null;
+    }
+    ['year','month','day','hour'].forEach(key => {
+        const z = pickZhi(pillars[key]);
+        if (!z) return;
+        const idx = zhi.indexOf(z);
+        const angle = (idx / 12) * Math.PI * 2 - Math.PI / 2;
+        const hx = cx + Math.cos(angle) * (compassR);
+        const hy = cy + Math.sin(angle) * (compassR);
+        const dot = createSvgEl('circle', { cx: hx, cy: hy, r: 10, fill: pillarColors[key], stroke: '#ffffff', 'stroke-width': 2 });
+        svg.appendChild(dot);
+        const capx = cx + Math.cos(angle) * (compassR + 60);
+        const capy = cy + Math.sin(angle) * (compassR + 60);
+        const tag = createSvgEl('text', { x: capx, y: capy, fill: pillarColors[key], 'font-size': '20', 'text-anchor': 'middle', 'dominant-baseline': 'middle' });
+        tag.textContent = key === 'year' ? '年' : key === 'month' ? '月' : key === 'day' ? '日' : '时';
+        svg.appendChild(tag);
+    });
+    
+    const logoBox = createSvgEl('rect', { x: 820, y: 995, width: 240, height: 50, rx: 12, fill: 'rgba(248,250,252,0.06)', stroke: 'rgba(245,158,11,0.25)' });
+    svg.appendChild(logoBox);
+    const logoDot = createSvgEl('circle', { cx: 840, cy: 1020, r: 10, fill: 'url(#logoGrad)' });
+    svg.appendChild(logoDot);
+    const logoText = createSvgEl('text', { x: 860, y: 1026, fill: 'url(#logoGrad)', 'font-size': '22' });
+    logoText.textContent = 'Bazi Calculator';
+    svg.appendChild(logoText);
+    
+    const footer = createSvgEl('text', { x: 540, y: 1020, 'text-anchor': 'middle', fill: '#94a3b8', 'font-size': '20' });
+    footer.textContent = '保存分享图 · 由 Bazi Calculator 生成';
+    svg.appendChild(footer);
+};
+
+BaziCalculator.prototype.generateShareImage = function() {
+    const svgEl = document.getElementById('shareSvg');
+    if (!svgEl) return;
+    const serializer = new XMLSerializer();
+    const svgStr = serializer.serializeToString(svgEl);
+    const svgUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+    const img = new Image();
+    img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1080;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#121326';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        const link = document.createElement('a');
+        link.download = 'bazi-share.png';
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+    img.src = svgUrl;
+};
 
 // Breadcrumb Navigation Functionality
 class BreadcrumbNavigation {
