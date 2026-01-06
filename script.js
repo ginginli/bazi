@@ -176,6 +176,9 @@ class BaziCalculator {
             document.getElementById('monthPillar').textContent = data.four_pillars.month || '--';
             document.getElementById('dayPillar').textContent = data.four_pillars.day || '--';
             document.getElementById('hourPillar').textContent = data.four_pillars.hour || '--';
+            
+            // 显示四柱对应的十神
+            this.displayPillarElements(data.four_pillars);
         }
         
         // 显示五行分析
@@ -184,13 +187,40 @@ class BaziCalculator {
             
             if (data.five_elements.strength) {
                 document.getElementById('chartStrength').textContent = data.five_elements.strength;
+                
+                // 显示强弱平衡状态
+                const balance = this.analyzeElementBalance(data.five_elements.scores, data.five_elements.strength);
+                document.getElementById('elementBalance').textContent = balance;
             }
         }
+        
+        // 显示十神分析
+        this.displayTenGods(data);
+        
+        // 显示格局分析
+        this.displayPatterns(data);
+        
+        // 显示神煞
+        this.displaySpiritualStars(data);
         
         // 显示基本信息
         if (data.basic_info) {
             document.getElementById('gregorianDate').textContent = data.basic_info.gregorian_date || '--';
             document.getElementById('lunarDate').textContent = data.basic_info.lunar_date || '--';
+            
+            // 从原始输出中提取更多信息
+            this.extractAdditionalInfo(data.raw_output);
+        }
+        
+        // 显示个性分析
+        this.displayPersonalityInsights(data);
+        
+        // 显示生活指导
+        this.displayLifeGuidance(data);
+        
+        // 显示原始输出（调试用）
+        if (data.raw_output) {
+            document.getElementById('rawOutput').textContent = data.raw_output;
         }
         
         // 显示结果容器
@@ -198,6 +228,218 @@ class BaziCalculator {
         
         // 滚动到结果区域
         this.resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    displayPillarElements(pillars) {
+        // 简化的十神对应关系（实际应该根据日干来计算）
+        const elements = {
+            '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', 
+            '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水'
+        };
+        
+        if (pillars.year) {
+            const yearElement = elements[pillars.year[0]] || '';
+            document.getElementById('yearElement').textContent = yearElement;
+        }
+        if (pillars.month) {
+            const monthElement = elements[pillars.month[0]] || '';
+            document.getElementById('monthElement').textContent = monthElement;
+        }
+        if (pillars.day) {
+            const dayElement = elements[pillars.day[0]] || '';
+            document.getElementById('dayElement').textContent = dayElement;
+        }
+        if (pillars.hour) {
+            const hourElement = elements[pillars.hour[0]] || '';
+            document.getElementById('hourElement').textContent = hourElement;
+        }
+    }
+    
+    analyzeElementBalance(scores, strength) {
+        const total = Object.values(scores).reduce((sum, score) => sum + score, 0);
+        const average = total / 5;
+        const variance = Object.values(scores).reduce((sum, score) => sum + Math.pow(score - average, 2), 0) / 5;
+        
+        if (variance < 10) return "Balanced";
+        if (strength > 35) return "Strong";
+        if (strength < 25) return "Weak";
+        return "Moderate";
+    }
+    
+    displayTenGods(data) {
+        const tenGodsGrid = document.getElementById('tenGodsGrid');
+        tenGodsGrid.innerHTML = '';
+        
+        // 从原始输出中提取十神信息
+        const tenGods = this.extractTenGods(data.raw_output);
+        
+        tenGods.forEach(god => {
+            const godItem = document.createElement('div');
+            godItem.className = 'god-item';
+            godItem.innerHTML = `
+                <div class="god-name">${god.name}</div>
+                <div class="god-value">${god.value}</div>
+            `;
+            tenGodsGrid.appendChild(godItem);
+        });
+    }
+    
+    extractTenGods(rawOutput) {
+        // 简化的十神提取（实际需要更复杂的解析）
+        const gods = [
+            { name: '比肩', value: '比' },
+            { name: '劫财', value: '劫' },
+            { name: '食神', value: '食' },
+            { name: '伤官', value: '伤' },
+            { name: '偏财', value: '才' },
+            { name: '正财', value: '财' },
+            { name: '七杀', value: '杀' },
+            { name: '正官', value: '官' },
+            { name: '偏印', value: '枭' },
+            { name: '正印', value: '印' }
+        ];
+        
+        return gods.slice(0, 6); // 显示前6个
+    }
+    
+    displayPatterns(data) {
+        // 从分析数据中提取格局信息
+        let primaryPattern = '--';
+        let secondaryPattern = '--';
+        
+        if (data.analysis && data.analysis.patterns) {
+            primaryPattern = data.analysis.patterns[0] || '--';
+            secondaryPattern = data.analysis.patterns[1] || '--';
+        }
+        
+        // 从原始输出中提取格局
+        if (data.raw_output) {
+            const patternMatch = data.raw_output.match(/格局选用：([^\\n]+)/);
+            if (patternMatch) {
+                const patterns = patternMatch[1].split(/[：；]/);
+                if (patterns.length > 1) {
+                    primaryPattern = patterns[1].trim();
+                }
+            }
+        }
+        
+        document.getElementById('primaryPattern').textContent = primaryPattern;
+        document.getElementById('secondaryPattern').textContent = secondaryPattern;
+    }
+    
+    displaySpiritualStars(data) {
+        const starsGrid = document.getElementById('spiritualStars');
+        starsGrid.innerHTML = '';
+        
+        // 从原始输出中提取神煞
+        const stars = this.extractSpiritualStars(data.raw_output);
+        
+        stars.forEach(star => {
+            const starTag = document.createElement('div');
+            starTag.className = 'star-tag';
+            starTag.textContent = star;
+            starsGrid.appendChild(starTag);
+        });
+    }
+    
+    extractSpiritualStars(rawOutput) {
+        const stars = [];
+        if (!rawOutput) return stars;
+        
+        // 提取常见神煞
+        const starPatterns = [
+            '天乙', '驿马', '桃花', '华盖', '文昌', '天德', '月德',
+            '劫煞', '亡神', '孤辰', '寡宿', '红艳', '将星', '大耗'
+        ];
+        
+        starPatterns.forEach(pattern => {
+            if (rawOutput.includes(pattern)) {
+                stars.push(pattern);
+            }
+        });
+        
+        return stars.slice(0, 8); // 最多显示8个
+    }
+    
+    extractAdditionalInfo(rawOutput) {
+        if (!rawOutput) return;
+        
+        // 提取节气信息
+        const solarTermsMatch = rawOutput.match(/立[^\\s]+\\s+[^\\s]+\\s+[^\\s]+/);
+        if (solarTermsMatch) {
+            document.getElementById('solarTerms').textContent = solarTermsMatch[0];
+        }
+        
+        // 提取命宫信息
+        const lifePalaceMatch = rawOutput.match(/命宫:([^\\s]+)/);
+        if (lifePalaceMatch) {
+            document.getElementById('lifePalace').textContent = lifePalaceMatch[1];
+        }
+    }
+    
+    displayPersonalityInsights(data) {
+        // 基于五行和格局的个性分析
+        const insights = this.generatePersonalityInsights(data);
+        
+        document.getElementById('characterTraits').textContent = insights.character;
+        document.getElementById('strengthsTalents').textContent = insights.strengths;
+        document.getElementById('areasGrowth').textContent = insights.growth;
+    }
+    
+    generatePersonalityInsights(data) {
+        // 简化的个性分析逻辑
+        let character = "Based on your bazi chart, you possess a unique combination of traits that reflect the balance of five elements in your constitution.";
+        let strengths = "Your natural abilities shine through your elemental composition, providing you with distinctive talents and capabilities.";
+        let growth = "Every chart has areas for development, and understanding these can help you achieve greater balance and fulfillment.";
+        
+        if (data.five_elements && data.five_elements.scores) {
+            const scores = data.five_elements.scores;
+            const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            
+            switch (dominant) {
+                case '木':
+                    character = "You have a strong Wood element, indicating creativity, growth-oriented thinking, and natural leadership abilities.";
+                    strengths = "Your innovative spirit and ability to adapt make you excellent at pioneering new projects and inspiring others.";
+                    break;
+                case '火':
+                    character = "Fire dominates your chart, suggesting passion, enthusiasm, and strong communication skills.";
+                    strengths = "Your charismatic personality and ability to motivate others are your greatest assets in both personal and professional relationships.";
+                    break;
+                case '土':
+                    character = "Earth element prominence indicates stability, reliability, and practical wisdom in your approach to life.";
+                    strengths = "Your grounded nature and ability to build lasting foundations make you a trusted advisor and dependable partner.";
+                    break;
+                case '金':
+                    character = "Metal element strength suggests precision, determination, and strong analytical abilities.";
+                    strengths = "Your attention to detail and systematic approach help you excel in fields requiring accuracy and strategic thinking.";
+                    break;
+                case '水':
+                    character = "Water element dominance indicates intuition, adaptability, and deep emotional intelligence.";
+                    strengths = "Your ability to flow with circumstances and understand others' emotions makes you naturally wise and empathetic.";
+                    break;
+            }
+        }
+        
+        return { character, strengths, growth };
+    }
+    
+    displayLifeGuidance(data) {
+        // 生活各方面的指导建议
+        const guidance = this.generateLifeGuidance(data);
+        
+        document.getElementById('careerWealth').textContent = guidance.career;
+        document.getElementById('relationships').textContent = guidance.relationships;
+        document.getElementById('healthWellness').textContent = guidance.health;
+        document.getElementById('lifePurpose').textContent = guidance.purpose;
+    }
+    
+    generateLifeGuidance(data) {
+        return {
+            career: "Your elemental composition suggests certain career paths may be more harmonious with your natural energy. Consider fields that align with your dominant elements.",
+            relationships: "Understanding your bazi chart can help you build more harmonious relationships by recognizing compatible energy patterns and communication styles.",
+            health: "Your five-element balance indicates specific areas of health to focus on. Maintaining elemental harmony through lifestyle choices supports overall wellbeing.",
+            purpose: "Your unique bazi pattern reveals your spiritual path and life mission. Embracing your authentic nature leads to greater fulfillment and success."
+        };
     }
     
     displayFiveElements(scores) {

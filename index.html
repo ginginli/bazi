@@ -144,18 +144,22 @@
                             <div class="pillar-card">
                                 <div class="pillar-label">Year Pillar</div>
                                 <div class="pillar-value" id="yearPillar">--</div>
+                                <div class="pillar-element" id="yearElement">--</div>
                             </div>
                             <div class="pillar-card">
                                 <div class="pillar-label">Month Pillar</div>
                                 <div class="pillar-value" id="monthPillar">--</div>
+                                <div class="pillar-element" id="monthElement">--</div>
                             </div>
                             <div class="pillar-card">
                                 <div class="pillar-label">Day Pillar</div>
                                 <div class="pillar-value" id="dayPillar">--</div>
+                                <div class="pillar-element" id="dayElement">--</div>
                             </div>
                             <div class="pillar-card">
                                 <div class="pillar-label">Hour Pillar</div>
                                 <div class="pillar-value" id="hourPillar">--</div>
+                                <div class="pillar-element" id="hourElement">--</div>
                             </div>
                         </div>
                     </div>
@@ -166,9 +170,46 @@
                         <div class="elements-chart" id="elementsChart">
                             <!-- Will be populated by JavaScript -->
                         </div>
-                        <div class="strength-indicator">
-                            <span>Chart Strength: </span>
-                            <span id="chartStrength" class="strength-value">--</span>
+                        <div class="elements-summary">
+                            <div class="strength-indicator">
+                                <span>Chart Strength: </span>
+                                <span id="chartStrength" class="strength-value">--</span>
+                            </div>
+                            <div class="balance-indicator">
+                                <span>Element Balance: </span>
+                                <span id="elementBalance" class="balance-value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ten Gods Analysis -->
+                    <div class="ten-gods-section">
+                        <h4>Ten Gods Analysis (十神分析)</h4>
+                        <div class="gods-grid" id="tenGodsGrid">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Pattern Analysis -->
+                    <div class="pattern-section">
+                        <h4>Pattern Analysis (格局分析)</h4>
+                        <div class="pattern-content" id="patternContent">
+                            <div class="pattern-item">
+                                <span class="pattern-label">Primary Pattern:</span>
+                                <span class="pattern-value" id="primaryPattern">--</span>
+                            </div>
+                            <div class="pattern-item">
+                                <span class="pattern-label">Secondary Pattern:</span>
+                                <span class="pattern-value" id="secondaryPattern">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Spiritual Stars -->
+                    <div class="stars-section">
+                        <h4>Spiritual Stars (神煞)</h4>
+                        <div class="stars-grid" id="spiritualStars">
+                            <!-- Will be populated by JavaScript -->
                         </div>
                     </div>
                     
@@ -184,7 +225,67 @@
                                 <span class="info-label">Lunar Date:</span>
                                 <span class="info-value" id="lunarDate">--</span>
                             </div>
+                            <div class="info-item">
+                                <span class="info-label">Solar Terms:</span>
+                                <span class="info-value" id="solarTerms">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Life Palace:</span>
+                                <span class="info-value" id="lifePalace">--</span>
+                            </div>
                         </div>
+                    </div>
+                    
+                    <!-- Personality Analysis -->
+                    <div class="personality-section">
+                        <h4>Personality Insights</h4>
+                        <div class="personality-content" id="personalityContent">
+                            <div class="insight-card">
+                                <h5>Character Traits</h5>
+                                <p id="characterTraits">Based on your bazi chart analysis...</p>
+                            </div>
+                            <div class="insight-card">
+                                <h5>Strengths & Talents</h5>
+                                <p id="strengthsTalents">Your natural abilities and advantages...</p>
+                            </div>
+                            <div class="insight-card">
+                                <h5>Areas for Growth</h5>
+                                <p id="areasGrowth">Potential challenges and development areas...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Life Aspects -->
+                    <div class="life-aspects-section">
+                        <h4>Life Aspects Guidance</h4>
+                        <div class="aspects-grid">
+                            <div class="aspect-card">
+                                <div class="aspect-icon">💼</div>
+                                <h5>Career & Wealth</h5>
+                                <p id="careerWealth">Professional path and financial prospects...</p>
+                            </div>
+                            <div class="aspect-card">
+                                <div class="aspect-icon">❤️</div>
+                                <h5>Relationships</h5>
+                                <p id="relationships">Love, marriage, and social connections...</p>
+                            </div>
+                            <div class="aspect-card">
+                                <div class="aspect-icon">🏥</div>
+                                <h5>Health & Wellness</h5>
+                                <p id="healthWellness">Physical and mental health considerations...</p>
+                            </div>
+                            <div class="aspect-card">
+                                <div class="aspect-icon">🎯</div>
+                                <h5>Life Purpose</h5>
+                                <p id="lifePurpose">Your spiritual path and life mission...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Raw Output (for debugging) -->
+                    <div class="raw-output-section" style="display: none;">
+                        <h4>Raw Analysis Data</h4>
+                        <pre id="rawOutput"></pre>
                     </div>
                     
                     <!-- Error Display -->

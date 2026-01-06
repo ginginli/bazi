@@ -74,13 +74,19 @@ class BaziCalculator:
             
             # 解析基本信息
             for line in lines:
-                if "公历:" in line:
-                    result["basic_info"]["gregorian_date"] = line.split("公历:")[1].strip()
-                elif "农历:" in line:
-                    result["basic_info"]["lunar_date"] = line.split("农历:")[1].strip()
-                elif "lunar_python:" in line:
-                    # 提取四柱信息
-                    pillars = line.split("lunar_python:")[1].strip().split()
+                # 解析公历农历信息
+                if "公历:" in line and "农历:" in line:
+                    parts = line.split()
+                    for i, part in enumerate(parts):
+                        if "公历:" in part and i + 1 < len(parts):
+                            result["basic_info"]["gregorian_date"] = parts[i + 1]
+                        elif "农历:" in part and i + 1 < len(parts):
+                            result["basic_info"]["lunar_date"] = parts[i + 1]
+                
+                # 解析四柱信息 - 寻找包含天干地支的行
+                if "四柱：" in line:
+                    pillars_text = line.split("四柱：")[1].strip()
+                    pillars = pillars_text.split()
                     if len(pillars) >= 4:
                         result["four_pillars"] = {
                             "year": pillars[0],
@@ -88,27 +94,43 @@ class BaziCalculator:
                             "day": pillars[2],
                             "hour": pillars[3]
                         }
+                
+                # 解析五行分数 - 寻找包含五行数值的行
+                if "金" in line and "木" in line and "水" in line and "火" in line and "土" in line:
+                    # 使用正则表达式提取五行分数
+                    elements_match = re.findall(r'([金木水火土])(\d+)', line)
+                    if elements_match:
+                        elements = {}
+                        for element, score in elements_match:
+                            elements[element] = int(score)
+                        result["five_elements"]["scores"] = elements
+                
+                # 解析强弱值
+                if "强弱:" in line:
+                    strength_match = re.search(r'强弱:(\d+)', line)
+                    if strength_match:
+                        result["five_elements"]["strength"] = int(strength_match.group(1))
             
-            # 解析五行分数
-            five_elements_match = re.search(r"五行分数 \{([^}]+)\}", output)
-            if five_elements_match:
-                elements_str = five_elements_match.group(1)
-                elements = {}
-                for item in elements_str.split(','):
-                    if ':' in item:
-                        key, value = item.split(':')
-                        elements[key.strip().strip("'")] = int(value.strip())
-                result["five_elements"]["scores"] = elements
-            
-            # 解析八字强弱
-            strength_match = re.search(r"八字强弱： (\d+)", output)
-            if strength_match:
-                result["five_elements"]["strength"] = int(strength_match.group(1))
-            
-            # 解析格局
-            pattern_matches = re.findall(r"格 \[([^\]]+)\]", output)
-            if pattern_matches:
-                result["analysis"]["patterns"] = pattern_matches[0].split("', '")
+            # 如果没有找到四柱，尝试从其他格式解析
+            if not result["four_pillars"]:
+                # 寻找天干地支组合的行
+                for line in lines:
+                    # 匹配类似 "庚 辛 庚 癸" 和 "午 巳 辰 未" 的行
+                    if re.match(r'^[甲乙丙丁戊己庚辛壬癸]\s+[甲乙丙丁戊己庚辛壬癸]\s+[甲乙丙丁戊己庚辛壬癸]\s+[甲乙丙丁戊己庚辛壬癸]', line.strip()):
+                        heavenly_stems = line.strip().split()[:4]
+                        # 寻找对应的地支行
+                        for next_line in lines:
+                            if re.match(r'^[子丑寅卯辰巳午未申酉戌亥]\s+[子丑寅卯辰巳午未申酉戌亥]\s+[子丑寅卯辰巳午未申酉戌亥]\s+[子丑寅卯辰巳午未申酉戌亥]', next_line.strip()):
+                                earthly_branches = next_line.strip().split()[:4]
+                                if len(heavenly_stems) == 4 and len(earthly_branches) == 4:
+                                    result["four_pillars"] = {
+                                        "year": heavenly_stems[0] + earthly_branches[0],
+                                        "month": heavenly_stems[1] + earthly_branches[1],
+                                        "day": heavenly_stems[2] + earthly_branches[2],
+                                        "hour": heavenly_stems[3] + earthly_branches[3]
+                                    }
+                                break
+                        break
             
             return result
             
