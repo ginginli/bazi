@@ -236,7 +236,10 @@ class BaziCalculator {
             setIfExists('lifePalace', data.basic_info.life_palace);
             setIfExists('bodyPalace', data.basic_info.body_palace);
             setIfExists('taiyuan', data.basic_info.taiyuan);
-            setIfExists('solarTerms', data.basic_info.solar_terms || data.basic_info.lichun_time);
+            
+            // 优先显示解析出的节气信息，否则使用备用信息
+            const solarTerms = data.basic_info.solar_terms || data.basic_info.lichun_time || '--';
+            setIfExists('solarTerms', solarTerms);
             
             // 从原始输出中提取更多信息
             this.extractAdditionalInfo(data.raw_output);

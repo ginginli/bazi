@@ -75,31 +75,41 @@ class BaziCalculator:
             # 解析基本信息
             for i, line in enumerate(lines):
                 # 解析命宫、胎元、身宫信息 (可能在同一行)
-                if "命宫:" in line or "Life Palace:" in line:
-                    # 提取命宫信息
-                    palace_match = re.search(r'(?:Life Palace:|命宫:)\s*([^\s]+)', line)
+                if "命宫:" in line:
+                    # 提取命宫信息 - 只取命宫后的第一个干支组合
+                    palace_match = re.search(r'命宫:([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])', line)
                     if palace_match:
                         result["basic_info"]["life_palace"] = palace_match.group(1)
                     
-                    # 提取胎元信息 (在同一行)
-                    taiyuan_match = re.search(r'胎元:\s*([^\s]+)', line)
+                    # 提取胎元信息 - 只取胎元后的第一个干支组合
+                    taiyuan_match = re.search(r'胎元:([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])', line)
                     if taiyuan_match:
                         result["basic_info"]["taiyuan"] = taiyuan_match.group(1)
                     
-                    # 提取身宫信息 (在同一行)
-                    body_palace_match = re.search(r'身宫:\s*([^\s]+)', line)
+                    # 提取身宫信息 - 只取身宫后的第一个干支组合
+                    body_palace_match = re.search(r'身宫:([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])', line)
                     if body_palace_match:
                         result["basic_info"]["body_palace"] = body_palace_match.group(1)
                 
-                # 解析节气信息
-                if "立春" in line and "雨水" in line:
-                    result["basic_info"]["solar_terms"] = line.strip()
+                # 解析节气信息 - 提取简洁的节气描述
+                seasonal_terms = ['立春', '立夏', '立秋', '立冬', '雨水', '惊蛰', '清明', '谷雨', '小满', '芒种', '夏至', '小暑', '大暑', '处暑', '白露', '秋分', '寒露', '霜降', '小雪', '大雪', '冬至', '小寒', '大寒']
+                for term in seasonal_terms:
+                    if f"{term}后" in line:
+                        # 提取节气时间段信息，如"立夏后戊土5日，庚金9日，丙火16日"
+                        seasonal_match = re.search(f'{term}后([^{term}]+)', line)
+                        if seasonal_match:
+                            seasonal_info = seasonal_match.group(1).strip()
+                            # 清理多余的文字，只保留核心信息
+                            seasonal_info = re.sub(r'\s+[立雨惊清谷小芒夏大处白秋寒霜冬].*', '', seasonal_info)
+                            result["basic_info"]["solar_terms"] = f"{term}后{seasonal_info}"
+                            break
                 
-                # 解析具体节气时间
-                if "立春" in line and ":" in line and len(line.split()) > 2:
-                    result["basic_info"]["lichun_time"] = line.strip()
-                elif "雨水" in line and ":" in line and len(line.split()) > 2:
-                    result["basic_info"]["yushui_time"] = line.strip()
+                # 解析具体节气时间 - 提取所有节气时间
+                seasonal_time_pattern = r'([立雨惊清谷小芒夏大处白秋寒霜冬][春夏秋冬雪露分至暑寒满种蛰明雨水])\s+(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})'
+                seasonal_times = re.findall(seasonal_time_pattern, line)
+                for term_name, time_str in seasonal_times:
+                    if term_name in ['雨水', '惊蛰', '立春', '立夏', '立秋', '立冬', '小满', '大暑', '处暑', '白露', '寒露', '小雪', '大雪']:
+                        result["basic_info"][f"{term_name}_time"] = f"{term_name} {time_str}"
                 
                 # 解析公历农历信息
                 if "公历:" in line and "农历:" in line:
