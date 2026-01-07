@@ -159,25 +159,82 @@ class BaziCalculator:
                 
                 # 解析湿度信息
                 if "湿度" in line:
+                    # 解析湿度范围
                     humidity_match = re.search(r'湿度\[([^\]]+)\]', line)
                     if humidity_match:
-                        result["analysis"]["humidity_range"] = humidity_match.group(1)
+                        result["five_elements"]["humidity_range"] = humidity_match.group(1)
                     
-                    # 提取湿度分数
-                    humidity_score_match = re.search(r'湿度分数[：:]\s*([+-]?\d+)', line)
+                    # 提取湿度分数 - 支持多种格式
+                    humidity_score_match = re.search(r'([+-]?\d+)\s*湿度', line)
                     if humidity_score_match:
-                        result["analysis"]["humidity"] = humidity_score_match.group(1)
-                    elif re.search(r'([+-]?\d+)\s*湿度', line):
-                        score_match = re.search(r'([+-]?\d+)\s*湿度', line)
-                        if score_match:
-                            result["analysis"]["humidity"] = score_match.group(1)
+                        result["five_elements"]["humidity_score"] = int(humidity_score_match.group(1))
+                    
+                    # 判断强弱状态
+                    if "强弱:" in line:
+                        strength_match = re.search(r'强弱:(\d+)', line)
+                        if strength_match:
+                            strength_value = int(strength_match.group(1))
+                            result["five_elements"]["weak"] = strength_value <= 29
                 
                 # 解析十神信息（比、官、杀等）
-                if re.search(r'[比劫食伤才财杀官枭印]', line) and len(line.strip().split()) <= 8:
-                    # 可能是十神行
-                    ten_gods = line.strip().split()
-                    if len(ten_gods) <= 8 and all(len(god) <= 2 for god in ten_gods):
+                if re.search(r'[比劫食伤才财杀官枭印]', line):
+                    # 检查是否是十神行（通常在天干行下面）
+                    parts = line.strip().split()
+                    ten_gods = []
+                    for part in parts:
+                        if part in ['比', '劫', '食', '伤', '才', '财', '杀', '官', '枭', '印', '--']:
+                            ten_gods.append(part)
+                    
+                    if len(ten_gods) >= 3:  # 至少有3个十神才认为是有效的十神行
                         result["analysis"]["ten_gods"] = ten_gods
+                
+                # 解析神煞信息
+                if "神:" in line or any(star in line for star in ['天乙', '天德', '月德', '劫煞', '桃花', '华盖', '文昌', '驿马', '孤辰', '寡宿', '红艳', '将星', '大耗', '亡神']):
+                    spiritual_stars = self.extract_spiritual_stars_from_line(line)
+                    if spiritual_stars:
+                        if "spiritual_stars" not in result["analysis"]:
+                            result["analysis"]["spiritual_stars"] = set()
+                        result["analysis"]["spiritual_stars"].update(spiritual_stars)
+                
+                # 解析格局信息
+                if "格局选用：" in line:
+                    pattern_text = line.split("格局选用：")[1].strip()
+                    patterns = self.parse_pattern_analysis(pattern_text)
+                    result["analysis"]["patterns"] = patterns
+                
+                # 解析调候用神信息
+                if "调候：" in line and "金不换大运" not in line:
+                    # 提取第一个调候信息
+                    seasonal_match = re.search(r'调候：\s*([^#]+)', line)
+                    if seasonal_match:
+                        seasonal_text = seasonal_match.group(1).strip()
+                        seasonal_info = self.parse_seasonal_adjustment(seasonal_text)
+                        result["analysis"]["seasonal_adjustment"] = seasonal_info
+                
+                # 解析金不换大运中的调候信息
+                if "金不换大运：" in line and "调候：" in line:
+                    # 提取金不换大运中的调候信息
+                    jinbuhuan_match = re.search(r'金不换大运：[^调]*调候：([^金]*)', line)
+                    if jinbuhuan_match:
+                        jinbuhuan_text = jinbuhuan_match.group(1).strip()
+                        if "jinbuhuan_seasonal" not in result["analysis"]:
+                            result["analysis"]["jinbuhuan_seasonal"] = {}
+                        result["analysis"]["jinbuhuan_seasonal"] = self.parse_seasonal_adjustment(jinbuhuan_text)
+                
+                # 解析大运信息 - 寻找大运起始行
+                if re.match(r'^\s*\d+\s+[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]\s+[沐长养冠建帝衰病死墓绝胎]\s+', line):
+                    luck_cycle = self.parse_luck_cycle_line(line)
+                    if luck_cycle:
+                        if "luck_cycles" not in result["analysis"]:
+                            result["analysis"]["luck_cycles"] = []
+                        # 避免重复添加相同年龄的大运
+                        existing_ages = [lc.get("start_age") for lc in result["analysis"]["luck_cycles"]]
+                        if luck_cycle.get("start_age") not in existing_ages:
+                            result["analysis"]["luck_cycles"].append(luck_cycle)
+            
+            # 转换神煞set为list
+            if "spiritual_stars" in result["analysis"]:
+                result["analysis"]["spiritual_stars"] = list(result["analysis"]["spiritual_stars"])
             
             # 如果没有找到四柱，尝试从其他格式解析
             if not result["four_pillars"]:
@@ -209,6 +266,184 @@ class BaziCalculator:
                 "error": f"解析错误: {str(e)}",
                 "raw_output": output
             }
+    
+    def extract_spiritual_stars_from_line(self, line):
+        """从单行中提取神煞信息"""
+        spiritual_stars = []
+        
+        # 定义神煞列表
+        star_patterns = [
+            '天乙', '天德', '月德', '劫煞', '桃花', '华盖', '文昌', '驿马', 
+            '孤辰', '寡宿', '红艳', '将星', '大耗', '亡神', '阳刃'
+        ]
+        
+        # 如果行中包含"神:"，提取冒号后的内容
+        if "神:" in line:
+            star_text = line.split("神:")[1].strip()
+            # 分割多个神煞
+            for star in star_patterns:
+                if star in star_text:
+                    spiritual_stars.append(star)
+        else:
+            # 直接在行中查找神煞
+            for star in star_patterns:
+                if star in line:
+                    spiritual_stars.append(star)
+        
+        return list(set(spiritual_stars))  # 去重
+    
+    def parse_pattern_analysis(self, pattern_text):
+        """解析格局分析文本"""
+        patterns = {
+            "primary_pattern": "",
+            "secondary_patterns": [],
+            "favorable_elements": [],
+            "unfavorable_elements": [],
+            "pattern_quality": ""
+        }
+        
+        try:
+            # 分割不同的格局描述
+            # 示例: "食伤生财：孤贫劳 财格：     印格；最佳       杀印相生：佳   官杀：体弱多病"
+            parts = re.split(r'[：；]', pattern_text)
+            
+            for i, part in enumerate(parts):
+                part = part.strip()
+                if not part:
+                    continue
+                    
+                if i == 0:  # 第一个通常是主格局
+                    patterns["primary_pattern"] = part
+                elif "最佳" in part:
+                    patterns["pattern_quality"] = "最佳"
+                    patterns["secondary_patterns"].append(part.replace("最佳", "").strip())
+                elif "佳" in part:
+                    patterns["pattern_quality"] = "佳" if not patterns["pattern_quality"] else patterns["pattern_quality"]
+                    patterns["secondary_patterns"].append(part.replace("佳", "").strip())
+                else:
+                    patterns["secondary_patterns"].append(part)
+            
+            # 提取喜忌信息（如果存在）
+            if "喜" in pattern_text:
+                favorable_match = re.search(r'喜([^忌]+)', pattern_text)
+                if favorable_match:
+                    favorable_text = favorable_match.group(1).strip()
+                    patterns["favorable_elements"] = [elem.strip() for elem in favorable_text if elem.strip()]
+            
+            if "忌" in pattern_text:
+                unfavorable_match = re.search(r'忌(.+)', pattern_text)
+                if unfavorable_match:
+                    unfavorable_text = unfavorable_match.group(1).strip()
+                    patterns["unfavorable_elements"] = [elem.strip() for elem in unfavorable_text if elem.strip()]
+                    
+        except Exception as e:
+            print(f"格局解析错误: {e}")
+        
+        return patterns
+    
+    def parse_seasonal_adjustment(self, seasonal_text):
+        """解析调候用神信息"""
+        seasonal_info = {
+            "adjustment_gods": [],
+            "priority_order": [],
+            "favorable_gods": [],
+            "unfavorable_gods": [],
+            "description": seasonal_text
+        }
+        
+        try:
+            # 解析优先级调候用神
+            # 示例: "1壬2丙戊3丁" 表示壬为第一优先级，丙戊为第二优先级，丁为第三优先级
+            priority_match = re.findall(r'(\d+)([甲乙丙丁戊己庚辛壬癸]+)', seasonal_text)
+            for priority, gods in priority_match:
+                for god in gods:
+                    seasonal_info["priority_order"].append({
+                        "priority": int(priority),
+                        "god": god
+                    })
+                    if god not in seasonal_info["adjustment_gods"]:
+                        seasonal_info["adjustment_gods"].append(god)
+            
+            # 解析喜忌用神
+            if "喜" in seasonal_text:
+                favorable_match = re.search(r'喜([甲乙丙丁戊己庚辛壬癸]+)', seasonal_text)
+                if favorable_match:
+                    seasonal_info["favorable_gods"] = list(favorable_match.group(1))
+            
+            if "忌" in seasonal_text:
+                unfavorable_match = re.search(r'忌([甲乙丙丁戊己庚辛壬癸]+)', seasonal_text)
+                if unfavorable_match:
+                    seasonal_info["unfavorable_gods"] = list(unfavorable_match.group(1))
+            
+            # 如果没有找到优先级信息，但有喜忌信息，将喜用神作为调候用神
+            if not seasonal_info["adjustment_gods"] and seasonal_info["favorable_gods"]:
+                seasonal_info["adjustment_gods"] = seasonal_info["favorable_gods"].copy()
+                    
+        except Exception as e:
+            print(f"调候解析错误: {e}")
+        
+        return seasonal_info
+    
+    def parse_luck_cycle_line(self, line):
+        """解析单行大运信息"""
+        try:
+            # 示例: "8        壬午 沐 杨柳木    食:壬＋　　　　　　　午＋沐"
+            parts = line.strip().split()
+            if len(parts) < 4:
+                return None
+            
+            luck_cycle = {
+                "start_age": None,
+                "heavenly_stem": "",
+                "earthly_branch": "",
+                "pillar": "",
+                "twelve_stages": "",
+                "nayin": "",
+                "ten_god": "",
+                "description": ""
+            }
+            
+            # 提取起运年龄
+            age_match = re.match(r'^\d+', parts[0])
+            if age_match:
+                luck_cycle["start_age"] = int(age_match.group())
+            
+            # 提取干支
+            pillar_match = re.search(r'([甲乙丙丁戊己庚辛壬癸])([子丑寅卯辰巳午未申酉戌亥])', line)
+            if pillar_match:
+                luck_cycle["heavenly_stem"] = pillar_match.group(1)
+                luck_cycle["earthly_branch"] = pillar_match.group(2)
+                luck_cycle["pillar"] = pillar_match.group(1) + pillar_match.group(2)
+            
+            # 提取十二长生
+            stages = ['长', '沐', '冠', '建', '帝', '衰', '病', '死', '墓', '绝', '胎', '养']
+            for stage in stages:
+                if stage in line:
+                    luck_cycle["twelve_stages"] = stage
+                    break
+            
+            # 提取纳音
+            nayin_patterns = [
+                '杨柳木', '井泉水', '屋上土', '霹雳火', '松柏木', '长流水', '砂中金', '山下火',
+                '平地木', '壁上土', '金泊金', '覆灯火', '天河水', '大驿土', '钗钏金', '桑柘木',
+                '大溪水', '砂中土', '天上火', '石榴木', '大海水', '海中金', '炉中火', '大林木',
+                '路旁土', '剑锋金', '山头火', '涧下水', '城头土', '白蜡金'
+            ]
+            for nayin in nayin_patterns:
+                if nayin in line:
+                    luck_cycle["nayin"] = nayin
+                    break
+            
+            # 提取十神
+            ten_god_match = re.search(r'([比劫食伤才财杀官枭印]):', line)
+            if ten_god_match:
+                luck_cycle["ten_god"] = ten_god_match.group(1)
+            
+            return luck_cycle
+            
+        except Exception as e:
+            print(f"大运解析错误: {e}")
+            return None
 
 # 初始化计算器
 calculator = BaziCalculator()

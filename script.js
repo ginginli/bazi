@@ -213,14 +213,8 @@ class BaziCalculator {
             this.showElementsImage();
         }
         
-        // 显示强弱分析
-        this.displayStrengthAnalysis(data);
-        
         // 显示十神分析
         this.displayTenGods(data);
-        
-        // 显示格局分析
-        this.displayPatternAnalysis(data);
         
         // 显示神煞分析
         this.displaySpiritualStars(data);
@@ -228,11 +222,11 @@ class BaziCalculator {
         // 显示大运流年
         this.displayLuckCycles(data);
         
+        // 显示格局分析
+        this.displayPatternAnalysis(data);
+        
         // 显示调候用神
         this.displaySeasonalAdjustment(data);
-        
-        // 显示专业分析
-        this.displayProfessionalAnalysis(data);
         
         // 显示基本信息
         if (data.basic_info) {
@@ -244,23 +238,9 @@ class BaziCalculator {
             setIfExists('taiyuan', data.basic_info.taiyuan);
             setIfExists('solarTerms', data.basic_info.solar_terms || data.basic_info.lichun_time);
             
-            // 更新宫位解释卡片的显示值
-            setIfExists('lifePalaceDisplay', data.basic_info.life_palace);
-            setIfExists('bodyPalaceDisplay', data.basic_info.body_palace);
-            setIfExists('taiyuanDisplay', data.basic_info.taiyuan);
-            
             // 从原始输出中提取更多信息
             this.extractAdditionalInfo(data.raw_output);
         }
-        
-        // 显示个性分析
-        this.displayPersonalityInsights(data);
-        
-        // 显示生活指导
-        this.displayLifeGuidance(data);
-        
-        // 更新概览部分的摘要卡片
-        this.updateSummaryCards(data);
         
         // 显示原始输出（调试用）
         if (data.raw_output) {
@@ -271,9 +251,9 @@ class BaziCalculator {
         // 显示结果容器
         this.resultsContainer.style.display = 'block';
         
-        // 确保概览标签页是激活状态
+        // 确保Basic Info标签页是激活状态
         if (window.breadcrumbNav) {
-            window.breadcrumbNav.switchToSection('pillars');
+            window.breadcrumbNav.switchToSection('basic');
         }
         
         // 滚动到结果区域
@@ -324,6 +304,8 @@ class BaziCalculator {
     
     displayTenGods(data) {
         const tenGodsGrid = document.getElementById('tenGodsGrid');
+        if (!tenGodsGrid) return;
+        
         tenGodsGrid.innerHTML = '';
         
         // 优先使用解析出的十神信息
@@ -389,24 +371,21 @@ class BaziCalculator {
         let secondaryPattern = '--';
         
         if (data.analysis && data.analysis.patterns) {
-            primaryPattern = data.analysis.patterns[0] || '--';
-            secondaryPattern = data.analysis.patterns[1] || '--';
-        }
-        
-        // 从原始输出中提取格局
-        if (data.raw_output) {
-            const patternMatch = data.raw_output.match(/格局选用：([^\\n]+)/);
-            if (patternMatch) {
-                const patterns = patternMatch[1].split(/[：；]/);
-                if (patterns.length > 1) {
-                    primaryPattern = patterns[1].trim();
-                }
-            }
+            const patterns = data.analysis.patterns;
+            primaryPattern = patterns.primary_pattern || '--';
+            secondaryPattern = patterns.secondary_patterns ? patterns.secondary_patterns.join(', ') : '--';
         }
         
         const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
         setIfExists('primaryPattern', primaryPattern);
         setIfExists('secondaryPattern', secondaryPattern);
+        
+        // 显示喜忌元素
+        if (data.analysis && data.analysis.patterns) {
+            const patterns = data.analysis.patterns;
+            setIfExists('favorableElements', patterns.favorable_elements ? patterns.favorable_elements.join(', ') : '--');
+            setIfExists('unfavorableElements', patterns.unfavorable_elements ? patterns.unfavorable_elements.join(', ') : '--');
+        }
     }
     
     displaySpiritualStars(data) {
@@ -595,14 +574,14 @@ class BaziCalculator {
         
         // 显示湿度分数
         const humidityScoreElement = document.getElementById('humidityScore');
-        if (humidityScoreElement && data.analysis && data.analysis.humidity) {
-            humidityScoreElement.textContent = data.analysis.humidity;
+        if (humidityScoreElement && data.five_elements && data.five_elements.humidity_score !== undefined) {
+            humidityScoreElement.textContent = data.five_elements.humidity_score;
         }
         
         // 显示湿度状态
         const humidityConditionElement = document.getElementById('humidityCondition');
-        if (humidityConditionElement && data.analysis && data.analysis.humidity) {
-            const humidity = parseInt(data.analysis.humidity);
+        if (humidityConditionElement && data.five_elements && data.five_elements.humidity_score !== undefined) {
+            const humidity = data.five_elements.humidity_score;
             let condition = 'Normal';
             let color = '#059669';
             
@@ -623,6 +602,52 @@ class BaziCalculator {
         
         // 显示强弱影响解读
         this.displayStrengthInterpretation(data);
+    }
+    
+    displayStrengthInterpretation(data) {
+        // 根据八字强弱提供解读和建议
+        const strengthImpactElement = document.getElementById('strengthImpact');
+        const strengthRecommendationsElement = document.getElementById('strengthRecommendations');
+        
+        const strength = data.five_elements && data.five_elements.strength;
+        const isWeak = data.five_elements && data.five_elements.weak;
+        const humidityScore = data.five_elements && data.five_elements.humidity_score;
+        
+        let interpretation = '';
+        let recommendations = '';
+        
+        if (isWeak) {
+            interpretation = `Your bazi chart shows a weak constitution (偏弱), meaning your day master needs support from helpful elements. This indicates you benefit from collaboration, supportive relationships, and environments that nurture your natural talents.`;
+            recommendations = `• Seek supportive partnerships and mentorship<br>
+• Focus on building steady foundations rather than rapid expansion<br>  
+• Cultivate patience and persistence in your endeavors<br>
+• Surround yourself with people who appreciate your qualities`;
+        } else {
+            interpretation = `Your bazi chart shows a strong constitution (偏强), meaning your day master has abundant energy and self-reliance. This indicates natural leadership abilities and the capacity to overcome challenges independently.`;
+            recommendations = `• Channel your energy into meaningful projects and goals<br>
+• Practice moderation to avoid overwhelming others<br>
+• Use your strength to help and guide those around you<br>
+• Balance confidence with humility and openness to feedback`;
+        }
+        
+        // 湿度影响解读
+        if (humidityScore !== undefined) {
+            if (humidityScore < -3) {
+                interpretation += ` Your chart tends toward cold and wet conditions, suggesting you benefit from warmth, activity, and energizing environments.`;
+            } else if (humidityScore > 3) {
+                interpretation += ` Your chart tends toward hot and dry conditions, suggesting you benefit from cooling, calming, and moistening influences.`;
+            } else {
+                interpretation += ` Your chart shows balanced humidity conditions, indicating good adaptability to different environments.`;
+            }
+        }
+        
+        if (strengthImpactElement) {
+            strengthImpactElement.innerHTML = interpretation;
+        }
+        
+        if (strengthRecommendationsElement) {
+            strengthRecommendationsElement.innerHTML = recommendations;
+        }
     }
     
     displayStrengthInterpretation(data) {
@@ -693,8 +718,14 @@ class BaziCalculator {
             container.innerHTML = '';
         });
         
-        // 从原始输出中提取神煞
-        const stars = this.extractSpiritualStars(data.raw_output);
+        // 从解析数据中获取神煞
+        let stars = [];
+        if (data.analysis && data.analysis.spiritual_stars) {
+            stars = data.analysis.spiritual_stars;
+        } else {
+            // 备用：从原始输出中提取神煞
+            stars = this.extractSpiritualStars(data.raw_output);
+        }
         
         // 分类神煞
         const starCategories = this.categorizeStars(stars);
@@ -739,23 +770,79 @@ class BaziCalculator {
     }
     
     displaySeasonalAdjustment(data) {
-        // 根据出生月份确定季节
-        const birthMonth = data.basic_info && data.basic_info.gregorian_date ? 
-                          this.extractMonth(data.basic_info.gregorian_date) : null;
+        // 优先使用金不换大运的调候信息，其次使用普通调候信息
+        let seasonal = null;
+        if (data.analysis && data.analysis.jinbuhuan_seasonal) {
+            seasonal = data.analysis.jinbuhuan_seasonal;
+        } else if (data.analysis && data.analysis.seasonal_adjustment) {
+            seasonal = data.analysis.seasonal_adjustment;
+        }
         
-        if (birthMonth) {
-            const season = this.getSeason(birthMonth);
-            const adjustmentGod = this.getAdjustmentGod(season, data);
-            const recommendation = this.getSeasonalRecommendation(season, adjustmentGod);
+        if (seasonal) {
+            const setIfExists = (id, value) => { 
+                const el = document.getElementById(id); 
+                if (el) el.textContent = value || '--'; 
+            };
             
-            // Add null checks to prevent errors
-            const birthSeasonElement = document.getElementById('birthSeason');
-            const adjustmentGodElement = document.getElementById('adjustmentGod');
-            const seasonalRecommendationElement = document.getElementById('seasonalRecommendation');
+            // 显示调候用神
+            const adjustmentGods = seasonal.adjustment_gods && seasonal.adjustment_gods.length > 0 
+                ? seasonal.adjustment_gods.join('、') 
+                : (seasonal.favorable_gods && seasonal.favorable_gods.length > 0 
+                    ? seasonal.favorable_gods.join('、') 
+                    : '--');
+            setIfExists('adjustmentGod', adjustmentGods);
             
-            if (birthSeasonElement) birthSeasonElement.textContent = season;
-            if (adjustmentGodElement) adjustmentGodElement.textContent = adjustmentGod;
-            if (seasonalRecommendationElement) seasonalRecommendationElement.textContent = recommendation;
+            // 构建推荐信息
+            let recommendations = [];
+            
+            // 显示优先级信息
+            if (seasonal.priority_order && seasonal.priority_order.length > 0) {
+                const priorityText = seasonal.priority_order
+                    .map(item => `${item.priority}. ${item.god}`)
+                    .join(', ');
+                recommendations.push(`调候优先级: ${priorityText}`);
+            }
+            
+            // 显示喜忌信息
+            if (seasonal.favorable_gods && seasonal.favorable_gods.length > 0) {
+                recommendations.push(`喜: ${seasonal.favorable_gods.join('、')}`);
+            }
+            
+            if (seasonal.unfavorable_gods && seasonal.unfavorable_gods.length > 0) {
+                recommendations.push(`忌: ${seasonal.unfavorable_gods.join('、')}`);
+            }
+            
+            const recommendationText = recommendations.length > 0 
+                ? recommendations.join(' | ') 
+                : '根据出生季节调节五行平衡';
+            setIfExists('seasonalRecommendation', recommendationText);
+            
+            // 显示出生季节
+            const birthMonth = data.basic_info && data.basic_info.gregorian_date ? 
+                              this.extractMonth(data.basic_info.gregorian_date) : null;
+            if (birthMonth) {
+                const season = this.getSeason(birthMonth);
+                setIfExists('birthSeason', season);
+            }
+        } else {
+            // 备用：根据出生月份确定季节
+            const birthMonth = data.basic_info && data.basic_info.gregorian_date ? 
+                              this.extractMonth(data.basic_info.gregorian_date) : null;
+            
+            if (birthMonth) {
+                const season = this.getSeason(birthMonth);
+                const adjustmentGod = this.getAdjustmentGod(season, data);
+                const recommendation = this.getSeasonalRecommendation(season, adjustmentGod);
+                
+                const setIfExists = (id, value) => { 
+                    const el = document.getElementById(id); 
+                    if (el) el.textContent = value || '--'; 
+                };
+                
+                setIfExists('birthSeason', season);
+                setIfExists('adjustmentGod', adjustmentGod);
+                setIfExists('seasonalRecommendation', recommendation);
+            }
         }
     }
     
@@ -805,21 +892,51 @@ class BaziCalculator {
     }
     
     displayCurrentLuck(data) {
-        // 从原始输出中提取当前大运信息
-        const currentYear = new Date().getFullYear();
-        const currentLuck = this.extractCurrentLuck(data.raw_output, currentYear);
-        
-        if (currentLuck) {
-            const setIfExists = (id, value) => { 
-                const el = document.getElementById(id); 
-                if (el) el.textContent = value || '--'; 
-            };
+        // 使用解析出的大运信息
+        if (data.analysis && data.analysis.luck_cycles && data.analysis.luck_cycles.length > 0) {
+            const currentYear = new Date().getFullYear();
+            const currentAge = currentYear - this.extractBirthYear(data);
             
-            setIfExists('currentLuckStart', currentLuck.startYear);
-            setIfExists('currentLuckEnd', currentLuck.endYear);
-            setIfExists('currentLuckStem', currentLuck.stem);
-            setIfExists('currentLuckBranch', currentLuck.branch);
-            setIfExists('currentLuckDescription', currentLuck.description);
+            // 找到当前年龄对应的大运
+            let currentLuck = null;
+            for (const luck of data.analysis.luck_cycles) {
+                if (currentAge >= luck.start_age && currentAge < luck.start_age + 10) {
+                    currentLuck = luck;
+                    break;
+                }
+            }
+            
+            if (currentLuck) {
+                const setIfExists = (id, value) => { 
+                    const el = document.getElementById(id); 
+                    if (el) el.textContent = value || '--'; 
+                };
+                
+                setIfExists('currentLuckStart', currentLuck.start_age);
+                setIfExists('currentLuckEnd', currentLuck.start_age + 9);
+                setIfExists('currentLuckStem', currentLuck.heavenly_stem);
+                setIfExists('currentLuckBranch', currentLuck.earthly_branch);
+                
+                const description = `当前大运 ${currentLuck.pillar}，十神为${currentLuck.ten_god}，十二长生为${currentLuck.twelve_stages}，纳音为${currentLuck.nayin}。`;
+                setIfExists('currentLuckDescription', description);
+            }
+        } else {
+            // 备用：从原始输出中提取当前大运信息
+            const currentYear = new Date().getFullYear();
+            const currentLuck = this.extractCurrentLuck(data.raw_output, currentYear);
+            
+            if (currentLuck) {
+                const setIfExists = (id, value) => { 
+                    const el = document.getElementById(id); 
+                    if (el) el.textContent = value || '--'; 
+                };
+                
+                setIfExists('currentLuckStart', currentLuck.startYear);
+                setIfExists('currentLuckEnd', currentLuck.endYear);
+                setIfExists('currentLuckStem', currentLuck.stem);
+                setIfExists('currentLuckBranch', currentLuck.branch);
+                setIfExists('currentLuckDescription', currentLuck.description);
+            }
         }
     }
     
@@ -854,23 +971,43 @@ class BaziCalculator {
         
         timeline.innerHTML = '';
         
-        // 生成大运时间轴
-        const currentYear = new Date().getFullYear();
-        const birthYear = this.extractBirthYear(data);
-        
-        if (birthYear) {
-            const luckPeriods = this.generateLuckPeriods(birthYear, currentYear);
+        // 使用解析出的大运数据
+        if (data.analysis && data.analysis.luck_cycles && data.analysis.luck_cycles.length > 0) {
+            const currentYear = new Date().getFullYear();
+            const birthYear = this.extractBirthYear(data);
+            const currentAge = currentYear - birthYear;
             
-            luckPeriods.forEach(period => {
+            data.analysis.luck_cycles.forEach(luck => {
                 const periodElement = document.createElement('div');
-                periodElement.className = `luck-period-item ${period.isCurrent ? 'current' : ''}`;
+                const isCurrent = currentAge >= luck.start_age && currentAge < luck.start_age + 10;
+                periodElement.className = `luck-period-item ${isCurrent ? 'current' : ''}`;
                 periodElement.innerHTML = `
-                    <div class="period-years">${period.startYear}-${period.endYear}</div>
-                    <div class="period-pillars">${period.stem}${period.branch}</div>
-                    <div class="period-age">Age ${period.startAge}-${period.endAge}</div>
+                    <div class="period-years">${luck.start_age}-${luck.start_age + 9}</div>
+                    <div class="period-pillars">${luck.pillar}</div>
+                    <div class="period-age">Age ${luck.start_age}-${luck.start_age + 9}</div>
+                    <div class="period-details">${luck.ten_god} ${luck.twelve_stages}</div>
                 `;
                 timeline.appendChild(periodElement);
             });
+        } else {
+            // 备用：生成大运时间轴
+            const currentYear = new Date().getFullYear();
+            const birthYear = this.extractBirthYear(data);
+            
+            if (birthYear) {
+                const luckPeriods = this.generateLuckPeriods(birthYear, currentYear);
+                
+                luckPeriods.forEach(period => {
+                    const periodElement = document.createElement('div');
+                    periodElement.className = `luck-period-item ${period.isCurrent ? 'current' : ''}`;
+                    periodElement.innerHTML = `
+                        <div class="period-years">${period.startYear}-${period.endYear}</div>
+                        <div class="period-pillars">${period.stem}${period.branch}</div>
+                        <div class="period-age">Age ${period.startAge}-${period.endAge}</div>
+                    `;
+                    timeline.appendChild(periodElement);
+                });
+            }
         }
     }
     
