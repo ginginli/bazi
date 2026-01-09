@@ -181,10 +181,6 @@ class BaziCalculator {
             
             // 显示四柱对应的十神
             this.displayPillarElements(data.four_pillars);
-            
-            // 自动生成四柱图片
-            this.buildPillarsSectionImage(data);
-            this.showPillarsImage();
         }
         
         // 显示五行分析
@@ -207,10 +203,6 @@ class BaziCalculator {
                     strengthElement.textContent = `${data.five_elements.strength} (中值: ${data.five_elements.middle_value})`;
                 }
             }
-            
-            // 自动生成五行图片
-            this.buildElementsSectionImage(data);
-            this.showElementsImage();
         }
         
         // 显示十神分析
@@ -266,8 +258,6 @@ class BaziCalculator {
         this.resultsContainer.scrollIntoView({ behavior: 'smooth' });
         
         this.buildShareCard(data);
-        this.buildPillarsSectionImage(data);
-        this.buildElementsSectionImage(data);
     }
     
     displayPillarElements(pillars) {
@@ -538,20 +528,7 @@ class BaziCalculator {
         }
     }
     
-    showPillarsImage() {
-        const imageContainer = document.getElementById('pillarsImage');
-        if (imageContainer) {
-            imageContainer.style.display = 'block';
-        }
-    }
-    
-    showElementsImage() {
-        const imageContainer = document.getElementById('elementsImage');
-        if (imageContainer) {
-            imageContainer.style.display = 'block';
-        }
-    }
-    
+
     displayStrengthAnalysis(data) {
         // 显示总分数
         const totalScoreElement = document.getElementById('strengthTotalScore');
