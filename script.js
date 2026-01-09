@@ -234,8 +234,11 @@ class BaziCalculator {
             setIfExists('gregorianDate', data.basic_info.gregorian_date);
             setIfExists('lunarDate', data.basic_info.lunar_date);
             setIfExists('lifePalace', data.basic_info.life_palace);
+            setIfExists('lifePalaceDisplay', data.basic_info.life_palace);
             setIfExists('bodyPalace', data.basic_info.body_palace);
+            setIfExists('bodyPalaceDisplay', data.basic_info.body_palace);
             setIfExists('taiyuan', data.basic_info.taiyuan);
+            setIfExists('taiyuanDisplay', data.basic_info.taiyuan);
             
             // 优先显示解析出的节气信息，否则使用备用信息
             const solarTerms = data.basic_info.solar_terms || data.basic_info.lichun_time || '--';
@@ -428,19 +431,9 @@ class BaziCalculator {
     extractAdditionalInfo(rawOutput) {
         if (!rawOutput) return;
         
-        // 提取节气信息
-        const solarTermsMatch = rawOutput.match(/立[^\\s]+\\s+[^\\s]+\\s+[^\\s]+/);
-        if (solarTermsMatch) {
-            const solarTermsElement = document.getElementById('solarTerms');
-            if (solarTermsElement) solarTermsElement.textContent = solarTermsMatch[0];
-        }
-        
-        // 提取命宫信息
-        const lifePalaceMatch = rawOutput.match(/命宫:([^\\s]+)/);
-        if (lifePalaceMatch) {
-            const lifePalaceElement = document.getElementById('lifePalace');
-            if (lifePalaceElement) lifePalaceElement.textContent = lifePalaceMatch[1];
-        }
+        // 这个函数现在不需要了，因为API已经正确解析了所有信息
+        // 保留函数以避免破坏现有代码，但不执行任何操作
+        return;
     }
     
     displayPersonalityInsights(data) {
