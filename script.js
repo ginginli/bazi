@@ -76,6 +76,14 @@ class BaziCalculator {
     async handleSubmit(event) {
         event.preventDefault();
         
+        // Google Analytics - 跟踪计算开始事件
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'bazi_calculation_started', {
+                event_category: 'engagement',
+                event_label: 'bazi_calculator_form_submit'
+            });
+        }
+        
         const formData = new FormData(this.form);
         const data = {
             year: parseInt(formData.get('year')),
@@ -88,6 +96,13 @@ class BaziCalculator {
         
         // 验证数据
         if (!this.validateInput(data)) {
+            // Google Analytics - 跟踪验证失败事件
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'form_validation_error', {
+                    event_category: 'error',
+                    event_label: 'bazi_calculator_validation_failed'
+                });
+            }
             return;
         }
         
@@ -99,8 +114,25 @@ class BaziCalculator {
             if (result.success) {
                 this.lastData = result.data;
                 this.displayResults(result.data);
+                
+                // Google Analytics - 跟踪计算成功事件
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'bazi_calculation_completed', {
+                        event_category: 'engagement',
+                        event_label: 'bazi_calculator_success',
+                        value: 1
+                    });
+                }
             } else {
                 this.displayError(result.error || 'Calculation failed');
+                
+                // Google Analytics - 跟踪计算失败事件
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'bazi_calculation_failed', {
+                        event_category: 'error',
+                        event_label: 'api_calculation_error'
+                    });
+                }
             }
         } catch (error) {
             console.error('API call failed:', error);
@@ -1728,6 +1760,15 @@ class BreadcrumbNavigation {
         const clickedTab = event.currentTarget;
         const targetSection = clickedTab.getAttribute('data-section');
         
+        // Google Analytics - 跟踪标签页切换
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'tab_switch', {
+                event_category: 'engagement',
+                event_label: `bazi_analysis_${targetSection}`,
+                custom_parameter_1: targetSection
+            });
+        }
+        
         // Remove active class from all tabs
         this.tabs.forEach(tab => tab.classList.remove('active'));
         
@@ -1798,4 +1839,102 @@ const observer = new IntersectionObserver(function(entries) {
 document.querySelectorAll('.feature-card, .step, .why-item, .faq-item').forEach(el => {
     el.classList.add('fade-in-up');
     observer.observe(el);
+});
+// Google Analytics 增强跟踪
+document.addEventListener('DOMContentLoaded', function() {
+    // 跟踪CTA按钮点击
+    const ctaButtons = document.querySelectorAll('.btn-primary, .btn-secondary');
+    ctaButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (typeof gtag !== 'undefined') {
+                const buttonText = this.textContent.trim();
+                const buttonClass = this.className.includes('btn-primary') ? 'primary' : 'secondary';
+                
+                gtag('event', 'cta_button_click', {
+                    event_category: 'engagement',
+                    event_label: `${buttonClass}_${buttonText.toLowerCase().replace(/\s+/g, '_')}`,
+                    button_text: buttonText
+                });
+            }
+        });
+    });
+    
+    // 跟踪页面滚动深度
+    let maxScrollDepth = 0;
+    let scrollDepthMarkers = [25, 50, 75, 90, 100];
+    let trackedDepths = [];
+    
+    function trackScrollDepth() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+        
+        if (scrollPercent > maxScrollDepth) {
+            maxScrollDepth = scrollPercent;
+            
+            scrollDepthMarkers.forEach(marker => {
+                if (scrollPercent >= marker && !trackedDepths.includes(marker)) {
+                    trackedDepths.push(marker);
+                    
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'scroll_depth', {
+                            event_category: 'engagement',
+                            event_label: `${marker}_percent`,
+                            value: marker
+                        });
+                    }
+                }
+            });
+        }
+    }
+    
+    // 节流滚动事件
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
+        }
+        scrollTimeout = setTimeout(trackScrollDepth, 100);
+    });
+    
+    // 跟踪FAQ展开
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach((item, index) => {
+        item.addEventListener('click', function() {
+            if (typeof gtag !== 'undefined') {
+                const question = this.querySelector('h3')?.textContent?.trim() || `FAQ ${index + 1}`;
+                
+                gtag('event', 'faq_expand', {
+                    event_category: 'engagement',
+                    event_label: `faq_${index + 1}`,
+                    faq_question: question
+                });
+            }
+        });
+    });
+    
+    // 跟踪页面停留时间
+    let startTime = Date.now();
+    let timeOnPageTracked = false;
+    
+    function trackTimeOnPage() {
+        if (!timeOnPageTracked) {
+            const timeSpent = Math.round((Date.now() - startTime) / 1000);
+            
+            if (timeSpent >= 30 && typeof gtag !== 'undefined') {
+                gtag('event', 'time_on_page', {
+                    event_category: 'engagement',
+                    event_label: 'engaged_user_30s',
+                    value: timeSpent
+                });
+                timeOnPageTracked = true;
+            }
+        }
+    }
+    
+    // 在用户离开页面前跟踪停留时间
+    window.addEventListener('beforeunload', trackTimeOnPage);
+    
+    // 也在30秒后跟踪一次
+    setTimeout(trackTimeOnPage, 30000);
 });
