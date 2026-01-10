@@ -56,7 +56,10 @@ document.querySelectorAll('.feature-card').forEach(card => {
 // Bazi Calculator Functionality
 class BaziCalculator {
     constructor() {
-        this.apiUrl = 'http://localhost:5001/api/calculate'; // 更新API地址
+        // 根据环境自动选择API地址
+        this.apiUrl = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5001/api/calculate'
+            : '/api/calculate'; // Vercel部署时使用相对路径
         this.form = document.getElementById('baziForm');
         this.resultsContainer = document.getElementById('calculatorResults');
         this.errorContainer = document.getElementById('errorMessage');
