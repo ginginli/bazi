@@ -1,14 +1,10 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Vercel Serverless Function for Bazi Calculator
-"""
-
+from http.server import BaseHTTPRequestHandler
 import json
 import subprocess
 import re
 import os
 from datetime import datetime
+from urllib.parse import parse_qs
 
 class BaziCalculator:
     def __init__(self):
@@ -83,92 +79,61 @@ class BaziCalculator:
         
         return data
 
-# Vercel serverless function handler
-def handler(request):
-    """Vercel函数入口点"""
+class handler(BaseHTTPRequestHandler):
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
     
-    # 处理CORS
-    if request.method == 'OPTIONS':
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type',
-            },
-            'body': ''
-        }
+    def do_POST(self):
+        try:
+            # 读取请求体
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode('utf-8'))
+            
+            # 验证必需参数
+            required_fields = ['year', 'month', 'day', 'hour']
+            for field in required_fields:
+                if field not in data:
+                    self.send_error_response(400, f"缺少必需参数: {field}")
+                    return
+            
+            # 调用计算器
+            calculator = BaziCalculator()
+            result = calculator.calculate(
+                year=data['year'],
+                month=data['month'],
+                day=data['day'],
+                hour=data['hour'],
+                gender=data.get('gender', 'male'),
+                calendar_type=data.get('calendar_type', 'gregorian')
+            )
+            
+            self.send_json_response(200, result)
+            
+        except Exception as e:
+            self.send_error_response(500, f"服务器错误: {str(e)}")
     
-    # 只处理POST请求
-    if request.method != 'POST':
-        return {
-            'statusCode': 405,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json',
-            },
-            'body': json.dumps({
-                "success": False,
-                "error": "Method not allowed"
-            })
-        }
+    def do_GET(self):
+        # 健康检查
+        self.send_json_response(200, {
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "service": "Bazi Calculator API"
+        })
     
-    try:
-        # 解析请求数据
-        if hasattr(request, 'get_json'):
-            data = request.get_json()
-        else:
-            # Vercel环境中的请求处理
-            body = request.get('body', '{}')
-            if isinstance(body, bytes):
-                body = body.decode('utf-8')
-            data = json.loads(body)
-        
-        # 验证必需参数
-        required_fields = ['year', 'month', 'day', 'hour']
-        for field in required_fields:
-            if field not in data:
-                return {
-                    'statusCode': 400,
-                    'headers': {
-                        'Access-Control-Allow-Origin': '*',
-                        'Content-Type': 'application/json',
-                    },
-                    'body': json.dumps({
-                        "success": False,
-                        "error": f"缺少必需参数: {field}"
-                    })
-                }
-        
-        # 调用计算器
-        calculator = BaziCalculator()
-        result = calculator.calculate(
-            year=data['year'],
-            month=data['month'],
-            day=data['day'],
-            hour=data['hour'],
-            gender=data.get('gender', 'male'),
-            calendar_type=data.get('calendar_type', 'gregorian')
-        )
-        
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json',
-            },
-            'body': json.dumps(result, ensure_ascii=False)
-        }
-        
-    except Exception as e:
-        return {
-            'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json',
-            },
-            'body': json.dumps({
-                "success": False,
-                "error": f"服务器错误: {str(e)}"
-            }, ensure_ascii=False)
-        }
+    def send_json_response(self, status_code, data):
+        self.send_response(status_code)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+        self.wfile.write(json.dumps(data, ensure_ascii=False).encode('utf-8'))
+    
+    def send_error_response(self, status_code, error_message):
+        self.send_json_response(status_code, {
+            "success": False,
+            "error": error_message
+        })
