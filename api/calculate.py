@@ -4,20 +4,16 @@
 Vercel Serverless Function for Bazi Calculator
 """
 
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import subprocess
 import json
+import subprocess
 import re
 import os
 from datetime import datetime
 
-app = Flask(__name__)
-CORS(app)
-
 class BaziCalculator:
-    def __init__(self, bazi_script_path="../bazi.py"):
-        self.bazi_script_path = bazi_script_path
+    def __init__(self):
+        # Vercel中文件在根目录
+        self.bazi_script_path = "bazi.py"
     
     def calculate(self, year, month, day, hour, gender="male", calendar_type="gregorian"):
         """调用bazi.py进行计算"""
@@ -59,7 +55,6 @@ class BaziCalculator:
     
     def parse_bazi_output(self, output):
         """解析bazi.py的输出"""
-        # 这里使用简化版的解析逻辑
         lines = output.strip().split('\n')
         
         data = {
@@ -88,25 +83,65 @@ class BaziCalculator:
         
         return data
 
-# 创建计算器实例
-calculator = BaziCalculator()
-
-@app.route('/api/calculate', methods=['POST'])
-def calculate_bazi():
-    """八字计算API端点"""
+# Vercel serverless function handler
+def handler(request):
+    """Vercel函数入口点"""
+    
+    # 处理CORS
+    if request.method == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            },
+            'body': ''
+        }
+    
+    # 只处理POST请求
+    if request.method != 'POST':
+        return {
+            'statusCode': 405,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            },
+            'body': json.dumps({
+                "success": False,
+                "error": "Method not allowed"
+            })
+        }
+    
     try:
-        data = request.get_json()
+        # 解析请求数据
+        if hasattr(request, 'get_json'):
+            data = request.get_json()
+        else:
+            # Vercel环境中的请求处理
+            body = request.get('body', '{}')
+            if isinstance(body, bytes):
+                body = body.decode('utf-8')
+            data = json.loads(body)
         
         # 验证必需参数
         required_fields = ['year', 'month', 'day', 'hour']
         for field in required_fields:
             if field not in data:
-                return jsonify({
-                    "success": False,
-                    "error": f"缺少必需参数: {field}"
-                }), 400
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/json',
+                    },
+                    'body': json.dumps({
+                        "success": False,
+                        "error": f"缺少必需参数: {field}"
+                    })
+                }
         
         # 调用计算器
+        calculator = BaziCalculator()
         result = calculator.calculate(
             year=data['year'],
             month=data['month'],
@@ -116,23 +151,24 @@ def calculate_bazi():
             calendar_type=data.get('calendar_type', 'gregorian')
         )
         
-        return jsonify(result)
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            },
+            'body': json.dumps(result, ensure_ascii=False)
+        }
         
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": f"服务器错误: {str(e)}"
-        }), 500
-
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    """健康检查端点"""
-    return jsonify({
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "service": "Bazi Calculator API"
-    })
-
-# Vercel handler
-def handler(request):
-    return app(request.environ, lambda status, headers: None)
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            },
+            'body': json.dumps({
+                "success": False,
+                "error": f"服务器错误: {str(e)}"
+            }, ensure_ascii=False)
+        }
