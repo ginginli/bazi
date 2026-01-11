@@ -1,10 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4QC6V8S4K"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      
+      gtag('config', 'G-D4QC6V8S4K');
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bazi Calculator - Free Chinese Astrology Birth Chart Analysis</title>
     <meta name="description" content="Free online bazi calculator for Chinese astrology. Calculate your four pillars of destiny with our accurate bazi calculator tool.">
+    <link rel="canonical" href="https://ginginli.github.io/bazi/">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -31,12 +42,14 @@
             <h2>Free Bazi Calculator - Discover Your Destiny Through 8 Core Analysis Sections</h2>
             <p class="hero-subtitle">
                 Use our advanced bazi calculator to unlock comprehensive Chinese astrology insights. 
-                Our professional bazi calculator provides accurate eight-section analysis including four pillars, five elements, ten gods, spiritual stars, luck cycles, and more through our sophisticated bazi calculator system.            </p>
+                Our professional bazi calculator provides accurate eight-section analysis including four pillars, five elements, ten gods, spiritual stars, luck cycles, and more through our sophisticated bazi calculator system.
+            </p>
             <div class="hero-cta">
                 <a href="#calculator" class="btn-primary">Try Our Bazi Calculator Now</a>
                 <a href="#what-is" class="btn-secondary">Learn About Bazi Calculator</a>
             </div>
         </div>
+    </section>
 
     <!-- Calculator Section -->
     <section id="calculator" class="calculator-section">
@@ -145,10 +158,17 @@
                                 <span class="tab-icon">⚡</span>
                                 <span class="tab-text">Five Elements</span>
                             </button>
+
                             <button class="breadcrumb-tab" data-section="tengods">
-                                <span class="tab-icon">👥</span>
+                                <span class="tab-icon">�</span>
                                 <span class="tab-text">Ten Gods</span>
                             </button>
+                            <button class="breadcrumb-tab" data-section="pattern">
+                                <span class="tab-icon">�️</span>
+                                <span class="tab-text">Analysis</span>
+                            </button>
+
+
                             <button class="breadcrumb-tab" data-section="stars">
                                 <span class="tab-icon">⭐</span>
                                 <span class="tab-text">Spiritual Stars</span>
@@ -157,22 +177,20 @@
                                 <span class="tab-icon">🌟</span>
                                 <span class="tab-text">Luck Cycles</span>
                             </button>
-                            <button class="breadcrumb-tab" data-section="pattern">
-                                <span class="tab-icon">🎭</span>
-                                <span class="tab-text">Pattern Analysis</span>
-                            </button>
                             <button class="breadcrumb-tab" data-section="seasonal">
                                 <span class="tab-icon">🌸</span>
                                 <span class="tab-text">Seasonal Adjustment</span>
                             </button>
+
                         </div>
                     </div>
                     
                     <!-- Results Content Sections -->
                     <div class="results-content">
                         
-                        <!-- 1. Basic Info Section -->
+                        <!-- Basic Info Section -->
                         <div class="result-section active" id="section-basic">
+                            <!-- Basic Information -->
                             <div class="basic-info-section">
                                 <h4>Birth Information</h4>
                                 <div class="info-grid">
@@ -202,9 +220,71 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Life Palace Explanation -->
+                            <div class="palace-explanation-section">
+                                <h4>Three Palaces Explanation (三宫解读)</h4>
+                                <div class="palace-overview">
+                                    <p>The Three Palaces provide additional layers of analysis beyond the Four Pillars, offering insights into different aspects of your spiritual and life journey.</p>
+                                </div>
+                                <div class="palace-cards">
+                                    <div class="palace-card">
+                                        <div class="palace-icon">🏛️</div>
+                                        <div class="palace-content">
+                                            <h5>Life Palace (命宫)</h5>
+                                            <p>The Life Palace represents your core essence, personality foundation, and overall life path. It acts as the "steering wheel" of your destiny, showing your fundamental nature and how you approach life's challenges.</p>
+                                            <div class="palace-value" id="lifePalaceDisplay">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="palace-card">
+                                        <div class="palace-icon">🌱</div>
+                                        <div class="palace-content">
+                                            <h5>Taiyuan (胎元)</h5>
+                                            <p>The Conception Palace represents your prenatal influences, inherited traits, and the spiritual foundation established before birth. It reveals your innate potential and ancestral connections.</p>
+                                            <div class="palace-value" id="taiyuanDisplay">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="palace-card">
+                                        <div class="palace-icon">🎯</div>
+                                        <div class="palace-content">
+                                            <h5>Body Palace (身宫)</h5>
+                                            <p>The Body Palace represents your physical manifestation, health tendencies, and how you express yourself in the material world. It shows your practical approach to achieving goals.</p>
+                                            <div class="palace-value" id="bodyPalaceDisplay">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Summary -->
+                            <div class="summary-section">
+                                <h4>Chart Summary</h4>
+                                <div class="summary-cards">
+                                    <div class="summary-card">
+                                        <div class="summary-icon">💪</div>
+                                        <div class="summary-content">
+                                            <div class="summary-label">Chart Strength</div>
+                                            <div class="summary-value" id="summaryStrength">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="summary-card">
+                                        <div class="summary-icon">⚖️</div>
+                                        <div class="summary-content">
+                                            <div class="summary-label">Element Balance</div>
+                                            <div class="summary-value" id="summaryBalance">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="summary-card">
+                                        <div class="summary-icon">🎭</div>
+                                        <div class="summary-content">
+                                            <div class="summary-label">Primary Pattern</div>
+                                            <div class="summary-value" id="summaryPattern">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         
-                        <!-- 2. Four Pillars Section -->
+                        <!-- Four Pillars Section -->
                         <div class="result-section" id="section-pillars">
                             <div class="four-pillars-section">
                                 <h4>Four Pillars (四柱)</h4>
@@ -230,13 +310,10 @@
                                         <div class="pillar-element" id="hourElement">--</div>
                                     </div>
                                 </div>
-                                <div class="share-card" id="pillarsImage" style="display: none;">
-                                    <svg id="pillarsSvg" width="1080" height="540" viewBox="0 0 1080 540" xmlns="http://www.w3.org/2000/svg"></svg>
-                                </div>
                             </div>
                         </div>
                         
-                        <!-- 3. Five Elements Section -->
+                        <!-- Five Elements Section -->
                         <div class="result-section" id="section-elements">
                             <div class="five-elements-section">
                                 <h4>Five Elements Analysis (五行分析)</h4>
@@ -253,13 +330,97 @@
                                         <span id="elementBalance" class="balance-value">--</span>
                                     </div>
                                 </div>
-                                <div class="share-card" id="elementsImage" style="display: none;">
-                                    <svg id="elementsSvg" width="1080" height="540" viewBox="0 0 1080 540" xmlns="http://www.w3.org/2000/svg"></svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart Strength Section -->
+                        <div class="result-section" id="section-strength">
+                            <div class="strength-analysis-section">
+                                <h4>Chart Strength Analysis (八字强弱分析)</h4>
+                                
+                                <!-- Strength Overview -->
+                                <div class="strength-overview">
+                                    <div class="strength-cards">
+                                        <div class="strength-card">
+                                            <div class="strength-icon">💪</div>
+                                            <div class="strength-content">
+                                                <div class="strength-label">Total Score</div>
+                                                <div class="strength-value" id="strengthTotalScore">--</div>
+                                                <div class="strength-desc">Current chart strength</div>
+                                            </div>
+                                        </div>
+                                        <div class="strength-card">
+                                            <div class="strength-icon">📊</div>
+                                            <div class="strength-content">
+                                                <div class="strength-label">Threshold</div>
+                                                <div class="strength-value" id="strengthThreshold">29</div>
+                                                <div class="strength-desc">Strong if > 29</div>
+                                            </div>
+                                        </div>
+                                        <div class="strength-card">
+                                            <div class="strength-icon">⚖️</div>
+                                            <div class="strength-content">
+                                                <div class="strength-label">Classification</div>
+                                                <div class="strength-value" id="strengthClassification">--</div>
+                                                <div class="strength-desc">Weak or Strong</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Humidity Analysis -->
+                                <div class="humidity-analysis">
+                                    <h5>Humidity Analysis (湿度分析)</h5>
+                                    <div class="humidity-cards">
+                                        <div class="humidity-card">
+                                            <div class="humidity-icon">🌡️</div>
+                                            <div class="humidity-content">
+                                                <div class="humidity-label">Humidity Score</div>
+                                                <div class="humidity-value" id="humidityScore">--</div>
+                                                <div class="humidity-desc">Current humidity level</div>
+                                            </div>
+                                        </div>
+                                        <div class="humidity-card">
+                                            <div class="humidity-icon">📏</div>
+                                            <div class="humidity-content">
+                                                <div class="humidity-label">Normal Range</div>
+                                                <div class="humidity-value">[-6, 6]</div>
+                                                <div class="humidity-desc">Acceptable range</div>
+                                            </div>
+                                        </div>
+                                        <div class="humidity-card">
+                                            <div class="humidity-icon">🌊</div>
+                                            <div class="humidity-content">
+                                                <div class="humidity-label">Condition</div>
+                                                <div class="humidity-value" id="humidityCondition">--</div>
+                                                <div class="humidity-desc">Dry/Wet/Normal</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Strength Interpretation -->
+                                <div class="strength-interpretation">
+                                    <h5>Interpretation (解读)</h5>
+                                    <div class="interpretation-content">
+                                        <div class="interpretation-card">
+                                            <h6>Chart Strength Impact</h6>
+                                            <p id="strengthImpact">Chart strength affects your natural energy levels, resilience, and ability to handle life challenges...</p>
+                                        </div>
+                                        <div class="interpretation-card">
+                                            <h6>Humidity Impact</h6>
+                                            <p id="humidityImpact">Humidity levels indicate the balance of yin-yang energies and emotional temperament...</p>
+                                        </div>
+                                        <div class="interpretation-card">
+                                            <h6>Recommendations</h6>
+                                            <p id="strengthRecommendations">Based on your chart strength and humidity, consider these lifestyle adjustments...</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- 4. Ten Gods Section -->
+                        <!-- Ten Gods Section -->
                         <div class="result-section" id="section-tengods">
                             <div class="ten-gods-section">
                                 <h4>Ten Gods Analysis (十神分析)</h4>
@@ -304,7 +465,91 @@
                             </div>
                         </div>
                         
-                        <!-- 5. Spiritual Stars Section -->
+                        <!-- Pattern & Stars Section -->
+                        <div class="result-section" id="section-pattern">
+                            <!-- Pattern Analysis -->
+                            <div class="pattern-section">
+                                <h4>Pattern Analysis (格局分析)</h4>
+                                <div class="pattern-overview">
+                                    <div class="pattern-explanation">
+                                        <p>格局是八字命理的核心概念，决定了一个人的基本命运走向和成就高低。通过分析日干与其他干支的关系，确定最适合的用神和格局。</p>
+                                    </div>
+                                </div>
+                                <div class="pattern-content" id="patternContent">
+                                    <div class="pattern-item">
+                                        <span class="pattern-label">Primary Pattern:</span>
+                                        <span class="pattern-value" id="primaryPattern">--</span>
+                                    </div>
+                                    <div class="pattern-item">
+                                        <span class="pattern-label">Secondary Pattern:</span>
+                                        <span class="pattern-value" id="secondaryPattern">--</span>
+                                    </div>
+                                    <div class="pattern-item">
+                                        <span class="pattern-label">Favorable Elements:</span>
+                                        <span class="pattern-value" id="favorableElements">--</span>
+                                    </div>
+                                    <div class="pattern-item">
+                                        <span class="pattern-label">Unfavorable Elements:</span>
+                                        <span class="pattern-value" id="unfavorableElements">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Spiritual Stars -->
+                            <div class="stars-section">
+                                <h4>Spiritual Stars (神煞分析)</h4>
+                                <div class="stars-overview">
+                                    <p>神煞是八字中的特殊星曜，代表不同的吉凶含义。通过分析神煞的组合，可以了解命主在各个方面的特殊际遇和注意事项。</p>
+                                </div>
+                                <div class="stars-categories">
+                                    <div class="stars-category">
+                                        <h5>吉神 (Auspicious Stars)</h5>
+                                        <div class="stars-grid auspicious" id="auspiciousStars">
+                                            <!-- Will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                    <div class="stars-category">
+                                        <h5>凶煞 (Inauspicious Stars)</h5>
+                                        <div class="stars-grid inauspicious" id="inauspiciousStars">
+                                            <!-- Will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                    <div class="stars-category">
+                                        <h5>特殊神煞 (Special Stars)</h5>
+                                        <div class="stars-grid special" id="specialStars">
+                                            <!-- Will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Seasonal Adjustment -->
+                            <div class="seasonal-section">
+                                <h4>Seasonal Adjustment (调候用神)</h4>
+                                <div class="seasonal-content">
+                                    <div class="seasonal-explanation">
+                                        <p>调候用神是根据出生季节和五行平衡来确定的关键用神，主要调节命局的寒暖燥湿，对运势影响重大。</p>
+                                    </div>
+                                    <div class="seasonal-analysis" id="seasonalAnalysis">
+                                        <div class="seasonal-item">
+                                            <span class="seasonal-label">Birth Season:</span>
+                                            <span class="seasonal-value" id="birthSeason">--</span>
+                                        </div>
+                                        <div class="seasonal-item">
+                                            <span class="seasonal-label">Adjustment God:</span>
+                                            <span class="seasonal-value" id="adjustmentGod">--</span>
+                                        </div>
+                                        <div class="seasonal-item">
+                                            <span class="seasonal-label">Recommendation:</span>
+                                            <span class="seasonal-value" id="seasonalRecommendation">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        
+                        <!-- Spiritual Stars Section -->
                         <div class="result-section" id="section-stars">
                             <div class="spiritual-stars-section">
                                 <h4>Spiritual Stars Analysis (神煞分析)</h4>
@@ -334,7 +579,7 @@
                             </div>
                         </div>
                         
-                        <!-- 6. Luck Cycles Section -->
+                        <!-- Luck Cycles Section -->
                         <div class="result-section" id="section-luck">
                             <div class="luck-cycles-section">
                                 <h4>Luck Cycles Analysis (大运流年分析)</h4>
@@ -378,37 +623,7 @@
                             </div>
                         </div>
                         
-                        <!-- 7. Pattern Analysis Section -->
-                        <div class="result-section" id="section-pattern">
-                            <div class="pattern-section">
-                                <h4>Pattern Analysis (格局分析)</h4>
-                                <div class="pattern-overview">
-                                    <div class="pattern-explanation">
-                                        <p>格局是八字命理的核心概念，决定了一个人的基本命运走向和成就高低。通过分析日干与其他干支的关系，确定最适合的用神和格局。</p>
-                                    </div>
-                                </div>
-                                <div class="pattern-content" id="patternContent">
-                                    <div class="pattern-item">
-                                        <span class="pattern-label">Primary Pattern:</span>
-                                        <span class="pattern-value" id="primaryPattern">--</span>
-                                    </div>
-                                    <div class="pattern-item">
-                                        <span class="pattern-label">Secondary Pattern:</span>
-                                        <span class="pattern-value" id="secondaryPattern">--</span>
-                                    </div>
-                                    <div class="pattern-item">
-                                        <span class="pattern-label">Favorable Elements:</span>
-                                        <span class="pattern-value" id="favorableElements">--</span>
-                                    </div>
-                                    <div class="pattern-item">
-                                        <span class="pattern-label">Unfavorable Elements:</span>
-                                        <span class="pattern-value" id="unfavorableElements">--</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- 8. Seasonal Adjustment Section -->
+                        <!-- Seasonal Adjustment Section -->
                         <div class="result-section" id="section-seasonal">
                             <div class="seasonal-adjustment-section">
                                 <h4>Seasonal Adjustment (调候用神)</h4>
@@ -438,6 +653,148 @@
                             </div>
                         </div>
                         
+                        <!-- Professional Analysis Section -->
+                        <div class="result-section" id="section-professional">
+                            <div class="professional-analysis-section">
+                                <h4>Professional Analysis (专业解读)</h4>
+                                
+                                <!-- Classical References -->
+                                <div class="classical-section">
+                                    <h5>Classical References (古籍条文)</h5>
+                                    <div class="classical-content" id="classicalReferences">
+                                        <div class="classical-quote">
+                                            <div class="quote-text" id="classicalQuote">
+                                                古籍条文将根据您的八字组合自动匹配显示...
+                                            </div>
+                                            <div class="quote-source" id="quoteSource">
+                                                -- 来源待匹配
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Technical Terms -->
+                                <div class="terms-section">
+                                    <h5>Technical Terms (专业术语)</h5>
+                                    <div class="terms-grid" id="technicalTerms">
+                                        <div class="term-card">
+                                            <h6>日干 (Day Master)</h6>
+                                            <p>八字中代表命主本人的天干，是分析的核心基准点。</p>
+                                        </div>
+                                        <div class="term-card">
+                                            <h6>用神 (Favorable God)</h6>
+                                            <p>对命局最有利的五行，能够平衡或增强命局力量。</p>
+                                        </div>
+                                        <div class="term-card">
+                                            <h6>忌神 (Unfavorable God)</h6>
+                                            <p>对命局不利的五行，会破坏命局平衡或削弱有用之神。</p>
+                                        </div>
+                                        <div class="term-card">
+                                            <h6>格局 (Pattern)</h6>
+                                            <p>八字的基本结构类型，决定命运的基本走向和层次。</p>
+                                        </div>
+                                        <div class="term-card">
+                                            <h6>大运 (Luck Cycle)</h6>
+                                            <p>每十年一个周期的运势变化，影响人生各阶段的际遇。</p>
+                                        </div>
+                                        <div class="term-card">
+                                            <h6>流年 (Annual Fortune)</h6>
+                                            <p>每年的运势变化，与大运和命局相互作用产生具体影响。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Deep Analysis -->
+                                <div class="deep-analysis-section">
+                                    <h5>Deep Analysis (深度分析)</h5>
+                                    <div class="analysis-tabs">
+                                        <button class="analysis-tab active" data-analysis="structure">命局结构</button>
+                                        <button class="analysis-tab" data-analysis="balance">平衡分析</button>
+                                        <button class="analysis-tab" data-analysis="combination">干支组合</button>
+                                        <button class="analysis-tab" data-analysis="transformation">化气分析</button>
+                                    </div>
+                                    <div class="analysis-content">
+                                        <div class="analysis-panel active" id="structure-panel">
+                                            <h6>命局结构分析</h6>
+                                            <p id="structureAnalysis">基于您的八字结构进行深度分析...</p>
+                                        </div>
+                                        <div class="analysis-panel" id="balance-panel">
+                                            <h6>五行平衡分析</h6>
+                                            <p id="balanceAnalysis">分析命局中五行的平衡状态...</p>
+                                        </div>
+                                        <div class="analysis-panel" id="combination-panel">
+                                            <h6>干支组合分析</h6>
+                                            <p id="combinationAnalysis">分析天干地支之间的相互关系...</p>
+                                        </div>
+                                        <div class="analysis-panel" id="transformation-panel">
+                                            <h6>化气分析</h6>
+                                            <p id="transformationAnalysis">分析可能的化气组合及其影响...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Personality Section -->
+                        <div class="result-section" id="section-personality"></div>
+                            <div class="personality-section">
+                                <h4>Personality Insights</h4>
+                                <div class="personality-content" id="personalityContent">
+                                    <div class="insight-card">
+                                        <h5>Character Traits</h5>
+                                        <p id="characterTraits">Based on your bazi chart analysis...</p>
+                                    </div>
+                                    <div class="insight-card">
+                                        <h5>Strengths & Talents</h5>
+                                        <p id="strengthsTalents">Your natural abilities and advantages...</p>
+                                    </div>
+                                    <div class="insight-card">
+                                        <h5>Areas for Growth</h5>
+                                        <p id="areasGrowth">Potential challenges and development areas...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Life Guidance Section -->
+                        <div class="result-section" id="section-guidance">
+                            <div class="life-aspects-section">
+                                <h4>Life Aspects Guidance</h4>
+                                <div class="aspects-grid">
+                                    <div class="aspect-card">
+                                        <div class="aspect-icon">💼</div>
+                                        <h5>Career & Wealth</h5>
+                                        <p id="careerWealth">Professional path and financial prospects...</p>
+                                    </div>
+                                    <div class="aspect-card">
+                                        <div class="aspect-icon">❤️</div>
+                                        <h5>Relationships</h5>
+                                        <p id="relationships">Love, marriage, and social connections...</p>
+                                    </div>
+                                    <div class="aspect-card">
+                                        <div class="aspect-icon">🏥</div>
+                                        <h5>Health & Wellness</h5>
+                                        <p id="healthWellness">Physical and mental health considerations...</p>
+                                    </div>
+                                    <div class="aspect-card">
+                                        <div class="aspect-icon">🎯</div>
+                                        <h5>Life Purpose</h5>
+                                        <p id="lifePurpose">Your spiritual path and life mission...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Share Card Section -->
+                        <div class="result-section" id="section-share">
+                            <div class="share-tools">
+                                <button class="btn-share" id="generateShareBtn">Generate Share Image</button>
+                            </div>
+                            <div class="share-card" id="shareCard">
+                                <svg id="shareSvg" width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg"></svg>
+                            </div>
+                        </div>
+                        
                     </div>
                     
                     <!-- Raw Output (for debugging) -->
@@ -455,41 +812,50 @@
             </div>
         </div>
     </section>
-
     <!-- Features Section -->
     <section id="features" class="features">
         <div class="container">
-            <h2>Why Our Bazi Calculator Stands Out</h2>
+            <h2>Why Our Bazi Calculator Delivers Complete Analysis</h2>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Accurate Bazi Calculator</h3>
-                    <p>Our bazi calculator uses traditional Chinese astrology algorithms to provide precise four pillars analysis with detailed interpretations.</p>
+                    <div class="feature-icon">📋</div>
+                    <h3>Comprehensive Basic Info Analysis</h3>
+                    <p>Our bazi calculator extracts detailed birth information including solar terms, life palace, and three palaces analysis. Get complete birth data interpretation with our advanced bazi calculator.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏛️</div>
+                    <h3>Precise Four Pillars Calculation</h3>
+                    <p>Experience accurate four pillars analysis with our bazi calculator. Each pillar (year, month, day, hour) is precisely calculated using traditional Chinese calendar conversion methods.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
-                    <h3>Instant Results</h3>
-                    <p>Get your complete bazi calculator results instantly. No waiting, no registration required for basic bazi calculator functionality.</p>
+                    <h3>Advanced Five Elements Analysis</h3>
+                    <p>Our bazi calculator provides detailed five elements scoring and balance analysis. Understand your elemental strengths and weaknesses through our sophisticated bazi calculator algorithms.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3>Mobile-Friendly Bazi Calculator</h3>
-                    <p>Access our bazi calculator from any device. The responsive design ensures perfect bazi calculator experience on mobile and desktop.</p>
+                    <div class="feature-icon">👥</div>
+                    <h3>Complete Ten Gods Interpretation</h3>
+                    <p>Discover your personality patterns with our bazi calculator's ten gods analysis. Our bazi calculator reveals relationship dynamics and character traits through traditional ten gods system.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Privacy Protected</h3>
-                    <p>Your personal information entered in the bazi calculator remains private and secure. We don't store your bazi calculator data.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Detailed Analysis</h3>
-                    <p>Beyond basic calculations, our bazi calculator provides comprehensive interpretations of your four pillars chart.</p>
+                    <div class="feature-icon">⭐</div>
+                    <h3>Spiritual Stars Analysis</h3>
+                    <p>Unlock hidden influences with our bazi calculator's spiritual stars feature. Our comprehensive bazi calculator identifies auspicious and challenging stars in your birth chart.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🌟</div>
-                    <h3>Free Bazi Calculator</h3>
-                    <p>Enjoy full access to our professional-grade bazi calculator without any cost. Premium features available for advanced users.</p>
+                    <h3>Detailed Luck Cycles Prediction</h3>
+                    <p>Plan your future with our bazi calculator's luck cycles analysis. Our advanced bazi calculator shows 10-year periods and important years for optimal life planning.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎭</div>
+                    <h3>Professional Pattern Analysis</h3>
+                    <p>Understand your destiny patterns with our expert bazi calculator. Our bazi calculator identifies favorable and unfavorable elements for life guidance and decision making.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌸</div>
+                    <h3>Seasonal Adjustment Guidance</h3>
+                    <p>Optimize your life balance with our bazi calculator's seasonal adjustment feature. Our intelligent bazi calculator provides personalized recommendations based on birth season analysis.</p>
                 </div>
             </div>
         </div>
@@ -502,30 +868,33 @@
             <div class="content-grid">
                 <div class="content-text">
                     <p>
-                        A bazi calculator is a specialized tool used in Chinese astrology to analyze the Four Pillars of Destiny. 
-                        The term "bazi" literally means "eight characters" in Chinese, referring to the eight characters that 
-                        represent your birth year, month, day, and hour in the Chinese calendar system.
+                        A bazi calculator is a comprehensive Chinese astrology tool that analyzes your Four Pillars of Destiny through eight core analysis sections. 
+                        Our advanced bazi calculator examines your birth information, four pillars, five elements balance, ten gods relationships, spiritual stars, 
+                        luck cycles, pattern analysis, and seasonal adjustments to provide complete life insights.
                     </p>
                     <p>
-                        Our bazi calculator converts your Western birth date and time into the traditional Chinese calendar format, 
-                        then analyzes the interaction between the five elements (Wood, Fire, Earth, Metal, Water) and the twelve 
-                        zodiac animals to reveal insights about your personality, relationships, career, and life path.
+                        Our professional bazi calculator converts your birth date into traditional Chinese calendar format, then performs detailed analysis across 
+                        all eight sections. The bazi calculator evaluates five elements interaction (Wood, Fire, Earth, Metal, Water), ten gods relationships, 
+                        and spiritual influences to reveal your personality, relationships, career potential, and optimal life timing through our sophisticated bazi calculator system.
                     </p>
                     <p>
-                        The bazi calculator has been used for over a thousand years in Chinese culture for fortune telling, 
-                        matchmaking, and life guidance. Today, our modern bazi calculator makes this ancient wisdom accessible 
-                        to everyone with just a few clicks.
+                        This ancient bazi calculator methodology has guided Chinese culture for over a millennium. Our modern bazi calculator preserves traditional 
+                        accuracy while providing instant, comprehensive analysis. Whether you're seeking personal insight or professional guidance, our bazi calculator 
+                        delivers authentic Chinese astrology wisdom through cutting-edge bazi calculator technology.
                     </p>
                 </div>
                 <div class="content-visual">
                     <div class="bazi-elements">
-                        <h4>Five Elements in Bazi Calculator</h4>
+                        <h4>Eight Analysis Sections in Our Bazi Calculator</h4>
                         <div class="elements-grid">
-                            <div class="element wood">Wood 木</div>
-                            <div class="element fire">Fire 火</div>
-                            <div class="element earth">Earth 土</div>
-                            <div class="element metal">Metal 金</div>
-                            <div class="element water">Water 水</div>
+                            <div class="element wood">Basic Info 基本信息</div>
+                            <div class="element fire">Four Pillars 四柱</div>
+                            <div class="element earth">Five Elements 五行</div>
+                            <div class="element metal">Ten Gods 十神</div>
+                            <div class="element water">Spiritual Stars 神煞</div>
+                            <div class="element wood">Luck Cycles 大运</div>
+                            <div class="element fire">Pattern Analysis 格局</div>
+                            <div class="element earth">Seasonal Adjustment 调候</div>
                         </div>
                     </div>
                 </div>
@@ -542,54 +911,61 @@
                     <div class="step-number">1</div>
                     <div class="step-content">
                         <h3>Enter Your Birth Information</h3>
-                        <p>Input your exact birth date, time, and gender into our bazi calculator. Accurate time is crucial for precise bazi calculator results.</p>
+                        <p>Input your exact birth date, time, and gender into our bazi calculator. Accurate timing ensures our bazi calculator provides precise analysis across all eight sections.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>Generate Your Bazi Chart</h3>
-                        <p>Click the calculate button and let our bazi calculator process your information using traditional Chinese astrology methods.</p>
+                        <h3>Generate Your Complete Bazi Analysis</h3>
+                        <p>Our bazi calculator processes your information through traditional algorithms, generating comprehensive analysis across basic info, four pillars, five elements, ten gods, spiritual stars, luck cycles, patterns, and seasonal adjustments.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3>Read Your Results</h3>
-                        <p>Review your personalized bazi calculator report, including your four pillars, element balance, and detailed interpretations.</p>
+                        <h3>Explore Your Eight Analysis Sections</h3>
+                        <p>Navigate through your personalized bazi calculator results using our intuitive interface. Each section provides detailed insights from our professional-grade bazi calculator analysis.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3>Apply the Insights</h3>
-                        <p>Use the wisdom from your bazi calculator analysis to make informed decisions about relationships, career, and life choices.</p>
+                        <h3>Apply Your Bazi Calculator Insights</h3>
+                        <p>Use the comprehensive guidance from our bazi calculator to make informed life decisions. Our bazi calculator provides actionable insights for relationships, career, timing, and personal development.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
     <!-- Why Choose Us Section -->
     <section id="why" class="why-choose">
         <div class="container">
-            <h2>Why Choose Our Bazi Calculator?</h2>
+            <h2>Why Choose Our Advanced Bazi Calculator?</h2>
             <div class="why-grid">
                 <div class="why-item">
-                    <h3>🎓 Expert Knowledge</h3>
-                    <p>Our bazi calculator is developed by Chinese astrology experts with decades of experience. The algorithms in our bazi calculator follow authentic traditional methods.</p>
+                    <h3>🎯 Complete 8-Section Analysis</h3>
+                    <p>Our comprehensive bazi calculator provides analysis across all eight core sections: basic info, four pillars, five elements, ten gods, spiritual stars, luck cycles, pattern analysis, and seasonal adjustments. No other bazi calculator offers such complete coverage.</p>
                 </div>
                 <div class="why-item">
-                    <h3>🔬 Scientific Approach</h3>
-                    <p>While respecting tradition, our bazi calculator incorporates modern computational methods to ensure accuracy and consistency in every calculation.</p>
+                    <h3>🔬 Traditional Accuracy with Modern Technology</h3>
+                    <p>Our bazi calculator combines authentic Chinese astrology methods with advanced algorithms. Every calculation in our bazi calculator follows traditional principles while leveraging modern computational precision for reliable results.</p>
                 </div>
                 <div class="why-item">
-                    <h3>🌍 Global Accessibility</h3>
-                    <p>Our bazi calculator works worldwide, automatically handling time zones and calendar conversions for users from different countries.</p>
+                    <h3>⚡ Instant Professional-Grade Results</h3>
+                    <p>Get immediate, detailed analysis from our high-performance bazi calculator. Our optimized bazi calculator processes complex calculations instantly, delivering professional-quality insights without delay.</p>
                 </div>
                 <div class="why-item">
-                    <h3>📈 Continuous Improvement</h3>
-                    <p>We regularly update our bazi calculator based on user feedback and the latest research in Chinese astrology to provide the most accurate readings.</p>
+                    <h3>🌍 Global Compatibility</h3>
+                    <p>Our intelligent bazi calculator automatically handles worldwide time zones and calendar systems. Whether you're born anywhere in the world, our bazi calculator ensures accurate conversion and analysis.</p>
+                </div>
+                <div class="why-item">
+                    <h3>📱 Multi-Device Accessibility</h3>
+                    <p>Access our responsive bazi calculator from any device - desktop, tablet, or mobile. Our mobile-optimized bazi calculator provides the same comprehensive analysis experience across all platforms.</p>
+                </div>
+                <div class="why-item">
+                    <h3>🔒 Privacy-First Bazi Calculator</h3>
+                    <p>Your personal information remains completely secure with our privacy-focused bazi calculator. We don't store your birth data, ensuring your bazi calculator session remains confidential and protected.</p>
                 </div>
             </div>
         </div>
@@ -598,37 +974,35 @@
     <!-- FAQ Section -->
     <section id="faq" class="faq">
         <div class="container">
-            <h2>Frequently Asked Questions About Our Bazi Calculator</h2>
+            <h2>Frequently Asked Questions About Bazi Calculator</h2>
             <div class="faq-list">
                 <div class="faq-item">
-                    <h3>How accurate is your bazi calculator?</h3>
-                    <div class="faq-answer">
-                        <p>Our bazi calculator uses authentic traditional Chinese astrology algorithms with over 95% accuracy. The precision depends on the accuracy of your birth time - the more precise your birth time, the more accurate your bazi calculator results will be.</p>
-                    </div>
+                    <h3>What is a bazi calculator and how does it work?</h3>
+                    <p>A bazi calculator is a tool that converts your birth information into Chinese astrology format. Our bazi calculator analyzes your four pillars (year, month, day, hour) to reveal personality traits, life patterns, and potential future trends based on traditional Chinese metaphysics.</p>
                 </div>
                 <div class="faq-item">
-                    <h3>Is the bazi calculator free to use?</h3>
-                    <div class="faq-answer">
-                        <p>Yes! Our basic bazi calculator is completely free. You can generate your four pillars chart, get element analysis, and receive basic interpretations without any cost. Premium features with detailed analysis are available for advanced users.</p>
-                    </div>
+                    <h3>Is the bazi calculator accurate?</h3>
+                    <p>Our bazi calculator uses authentic traditional algorithms and has been tested for accuracy. However, like all forms of astrology, the bazi calculator should be used as guidance rather than absolute prediction. The accuracy of your bazi calculator results depends on the precision of your birth time.</p>
                 </div>
                 <div class="faq-item">
-                    <h3>What information do I need for the bazi calculator?</h3>
-                    <div class="faq-answer">
-                        <p>To use our bazi calculator, you need your exact birth date (year, month, day), birth time (preferably to the hour), gender, and whether you want to use the Gregorian or Chinese lunar calendar for calculation.</p>
-                    </div>
+                    <h3>Do I need to pay to use the bazi calculator?</h3>
+                    <p>No, our basic bazi calculator is completely free to use. You can generate your four pillars chart and get basic interpretations without any cost. Premium features for advanced bazi calculator analysis are available for users who want deeper insights.</p>
                 </div>
                 <div class="faq-item">
-                    <h3>Can I use the bazi calculator on mobile devices?</h3>
-                    <div class="faq-answer">
-                        <p>Absolutely! Our bazi calculator is fully responsive and works perfectly on smartphones, tablets, and desktop computers. The mobile version maintains all functionality while being optimized for touch interfaces.</p>
-                    </div>
+                    <h3>How important is the exact birth time for the bazi calculator?</h3>
+                    <p>Birth time is crucial for accurate bazi calculator results. Even a difference of two hours can change your hour pillar in the bazi calculator, potentially affecting the interpretation. If you don't know your exact birth time, the bazi calculator can still provide valuable insights, but with less precision.</p>
                 </div>
                 <div class="faq-item">
-                    <h3>How is your bazi calculator different from others?</h3>
-                    <div class="faq-answer">
-                        <p>Our bazi calculator stands out through its combination of traditional accuracy and modern usability. We provide detailed explanations, visual charts, and practical guidance that makes Chinese astrology accessible to everyone, regardless of their background knowledge.</p>
-                    </div>
+                    <h3>Can I use the bazi calculator for other people?</h3>
+                    <p>Yes, you can use our bazi calculator to generate charts for family members, friends, or anyone whose birth information you have. Many users find the bazi calculator helpful for understanding relationships and compatibility.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What's the difference between bazi calculator and Western astrology?</h3>
+                    <p>While Western astrology focuses on planetary positions, the bazi calculator is based on the Chinese calendar system and five-element theory. The bazi calculator emphasizes the balance and interaction of elements, while Western astrology looks at celestial influences. Both systems offer unique insights.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>How often should I check my bazi calculator results?</h3>
+                    <p>Your basic bazi calculator chart remains the same throughout your life since it's based on your birth information. However, you might want to revisit your bazi calculator analysis during major life transitions or annually to reflect on the insights and how they apply to your current situation.</p>
                 </div>
             </div>
         </div>
@@ -639,8 +1013,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h4>Bazi Calculator</h4>
-                    <p>Your trusted source for authentic Chinese astrology analysis. Our bazi calculator provides accurate four pillars readings based on traditional methods.</p>
+                    <h3>Bazi Calculator</h3>
+                    <p>Your trusted source for authentic Chinese astrology analysis. Our bazi calculator brings ancient wisdom to the modern world.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
@@ -648,29 +1022,34 @@
                         <li><a href="#calculator">Bazi Calculator</a></li>
                         <li><a href="#features">Features</a></li>
                         <li><a href="#what-is">About Bazi</a></li>
-                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#how-to">How to Use</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Resources</h4>
                     <ul>
-                        <li><a href="#how-to">How to Use</a></li>
-                        <li><a href="#why">Why Choose Us</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#">Bazi Calculator Guide</a></li>
+                        <li><a href="#">Chinese Astrology Blog</a></li>
+                        <li><a href="#">Contact Support</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h4>Contact</h4>
-                    <p>Questions about our bazi calculator? We're here to help you understand your four pillars chart and Chinese astrology readings.</p>
+                    <h4>Connect</h4>
+                    <p>Follow us for bazi calculator tips and Chinese astrology insights.</p>
+                    <div class="social-links">
+                        <a href="#">Facebook</a>
+                        <a href="#">Twitter</a>
+                        <a href="#">Instagram</a>
+                    </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Bazi Calculator. All rights reserved. Professional Chinese astrology analysis tool.</p>
+                <p>&copy; 2024 Bazi Calculator. All rights reserved. | Privacy Policy | Terms of Service</p>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
 </body>
-</html>
+</html>""
