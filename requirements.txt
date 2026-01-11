@@ -1,1 +1,3 @@
 lunar-python==1.4.8
+colorama==0.4.6
+bidict==0.22.1
