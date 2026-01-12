@@ -1,1 +1,15 @@
-{}
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "bazi_api.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/bazi_api.py"
+    }
+  ]
+}
