@@ -6,7 +6,15 @@
       "use": "@vercel/python"
     },
     {
-      "src": "index.html",
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
       "use": "@vercel/static"
     }
   ],
@@ -14,6 +22,14 @@
     {
       "src": "/api/(.*)",
       "dest": "/bazi_api.py"
+    },
+    {
+      "src": "/styles.css",
+      "dest": "/styles.css"
+    },
+    {
+      "src": "/script.js",
+      "dest": "/script.js"
     },
     {
       "src": "/(.*)",
