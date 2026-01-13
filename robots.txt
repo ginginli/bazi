@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://bazical.pro/sitemap.xml
+
+# Disallow test files and debugging pages
+Disallow: /test_*.html
+Disallow: /*.py
+Disallow: /api/
+
+# Allow important resources
+Allow: /styles.css
+Allow: /script.js
+Allow: /index.html
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
