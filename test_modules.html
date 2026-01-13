@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Three Modules</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .module { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .star-tag { display: inline-block; background: #f0f0f0; padding: 5px 10px; margin: 2px; border-radius: 3px; }
+        .luck-period-item { background: #f9f9f9; padding: 10px; margin: 5px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Test Three Modules</h1>
+    
+    <button onclick="testModules()">Test All Modules</button>
+    
+    <div class="module">
+        <h2>Spiritual Stars</h2>
+        <div id="auspiciousStars"></div>
+        <div id="inauspiciousStars"></div>
+        <div id="otherStars"></div>
+    </div>
+    
+    <div class="module">
+        <h2>Luck Cycles</h2>
+        <p>Current Luck: <span id="currentLuckStart">--</span> - <span id="currentLuckEnd">--</span></p>
+        <p>Stem: <span id="currentLuckStem">--</span>, Branch: <span id="currentLuckBranch">--</span></p>
+        <p>Description: <span id="currentLuckDescription">--</span></p>
+        <div id="luckTimeline"></div>
+    </div>
+    
+    <div class="module">
+        <h2>Seasonal Adjustment</h2>
+        <p>Birth Season: <span id="birthSeason">--</span></p>
+        <p>Adjustment God: <span id="adjustmentGod">--</span></p>
+        <p>Recommendation: <span id="seasonalRecommendation">--</span></p>
+    </div>
+    
+    <script>
+        // Copy the relevant functions from script.js
+        class TestBaziCalculator {
+            constructor() {
+                this.apiUrl = 'http://localhost:5001/api/calculate';
+            }
+            
+            async testModules() {
+                try {
+                    const response = await fetch(this.apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            year: 1990,
+                            month: 5,
+                            day: 15,
+                            hour: 14,
+                            gender: 'male',
+                            calendar_type: 'gregorian'
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    console.log('API Response:', result);
+                    
+                    if (result.success) {
+                        const data = result.data;
+                        this.displaySpiritualStars(data);
+                        this.displayLuckCycles(data);
+                        this.displaySeasonalAdjustment(data);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+            
+            displaySpiritualStars(data) {
+                this.displaySpiritualStarsCategories(data);
+            }
+            
+            displaySpiritualStarsCategories(data) {
+                const auspiciousContainer = document.getElementById('auspiciousStars');
+                const inauspiciousContainer = document.getElementById('inauspiciousStars');
+                const otherContainer = document.getElementById('otherStars');
+                
+                if (!auspiciousContainer || !inauspiciousContainer || !otherContainer) return;
+                
+                // 清空容器
+                [auspiciousContainer, inauspiciousContainer, otherContainer].forEach(container => {
+                    container.innerHTML = '';
+                });
+                
+                // 从解析数据中获取神煞
+                let stars = [];
+                if (data.analysis && data.analysis.spiritual_stars) {
+                    stars = data.analysis.spiritual_stars;
+                } else {
+                    stars = [];
+                }
+                
+                console.log('Spiritual Stars:', stars);
+                
+                // 分类神煞
+                const starCategories = this.categorizeStars(stars);
+                
+                // 显示吉神
+                auspiciousContainer.innerHTML = '<h3>吉神:</h3>';
+                starCategories.auspicious.forEach(star => {
+                    const starTag = document.createElement('div');
+                    starTag.className = 'star-tag';
+                    starTag.textContent = star;
+                    auspiciousContainer.appendChild(starTag);
+                });
+                
+                // 显示凶煞
+                inauspiciousContainer.innerHTML = '<h3>凶煞:</h3>';
+                starCategories.inauspicious.forEach(star => {
+                    const starTag = document.createElement('div');
+                    starTag.className = 'star-tag';
+                    starTag.textContent = star;
+                    inauspiciousContainer.appendChild(starTag);
+                });
+                
+                // 显示其他神煞
+                otherContainer.innerHTML = '<h3>其他:</h3>';
+                starCategories.special.forEach(star => {
+                    const starTag = document.createElement('div');
+                    starTag.className = 'star-tag';
+                    starTag.textContent = star;
+                    otherContainer.appendChild(starTag);
+                });
+            }
+            
+            categorizeStars(stars) {
+                const auspicious = ['天乙', '天德', '月德', '文昌', '将星'];
+                const inauspicious = ['大耗', '劫煞', '亡神', '孤辰', '寡宿'];
+                const special = ['驿马', '桃花', '华盖', '红艳'];
+                
+                return {
+                    auspicious: stars.filter(star => auspicious.some(a => star.includes(a))),
+                    inauspicious: stars.filter(star => inauspicious.some(i => star.includes(i))),
+                    special: stars.filter(star => special.some(s => star.includes(s)) || 
+                                         (!auspicious.some(a => star.includes(a)) && 
+                                          !inauspicious.some(i => star.includes(i))))
+                };
+            }
+            
+            displayLuckCycles(data) {
+                this.displayCurrentLuck(data);
+                this.displayLuckTimeline(data);
+            }
+            
+            displayCurrentLuck(data) {
+                if (data.analysis && data.analysis.luck_cycles && data.analysis.luck_cycles.length > 0) {
+                    const currentYear = new Date().getFullYear();
+                    const currentAge = currentYear - this.extractBirthYear(data);
+                    
+                    let currentLuck = null;
+                    for (const luck of data.analysis.luck_cycles) {
+                        if (currentAge >= luck.start_age && currentAge < luck.start_age + 10) {
+                            currentLuck = luck;
+                            break;
+                        }
+                    }
+                    
+                    console.log('Current Luck:', currentLuck);
+                    
+                    if (currentLuck) {
+                        const setIfExists = (id, value) => { 
+                            const el = document.getElementById(id); 
+                            if (el) el.textContent = value || '--'; 
+                        };
+                        
+                        setIfExists('currentLuckStart', currentLuck.start_age);
+                        setIfExists('currentLuckEnd', currentLuck.start_age + 9);
+                        setIfExists('currentLuckStem', currentLuck.heavenly_stem);
+                        setIfExists('currentLuckBranch', currentLuck.earthly_branch);
+                        setIfExists('currentLuckDescription', currentLuck.description);
+                    }
+                }
+            }
+            
+            displayLuckTimeline(data) {
+                const timeline = document.getElementById('luckTimeline');
+                if (!timeline) return;
+                
+                timeline.innerHTML = '<h3>大运时间轴:</h3>';
+                
+                if (data.analysis && data.analysis.luck_cycles && data.analysis.luck_cycles.length > 0) {
+                    const currentYear = new Date().getFullYear();
+                    const birthYear = this.extractBirthYear(data);
+                    const currentAge = currentYear - birthYear;
+                    
+                    data.analysis.luck_cycles.forEach(luck => {
+                        const periodElement = document.createElement('div');
+                        const isCurrent = currentAge >= luck.start_age && currentAge < luck.start_age + 10;
+                        periodElement.className = `luck-period-item ${isCurrent ? 'current' : ''}`;
+                        periodElement.innerHTML = `
+                            <strong>${luck.start_age}-${luck.start_age + 9}岁:</strong> ${luck.pillar} (${luck.ten_god} ${luck.twelve_stages})
+                        `;
+                        timeline.appendChild(periodElement);
+                    });
+                }
+            }
+            
+            extractBirthYear(data) {
+                if (data.basic_info && data.basic_info.gregorian_date) {
+                    const match = data.basic_info.gregorian_date.match(/(\\d{4})年/);
+                    return match ? parseInt(match[1]) : null;
+                }
+                return null;
+            }
+            
+            displaySeasonalAdjustment(data) {
+                let seasonal = null;
+                if (data.analysis && data.analysis.jinbuhuan_seasonal) {
+                    seasonal = data.analysis.jinbuhuan_seasonal;
+                } else if (data.analysis && data.analysis.seasonal_adjustment) {
+                    seasonal = data.analysis.seasonal_adjustment;
+                }
+                
+                console.log('Seasonal data:', seasonal);
+                
+                if (seasonal) {
+                    const setIfExists = (id, value) => { 
+                        const el = document.getElementById(id); 
+                        if (el) el.textContent = value || '--'; 
+                    };
+                    
+                    const adjustmentGods = seasonal.adjustment_gods && seasonal.adjustment_gods.length > 0 
+                        ? seasonal.adjustment_gods.join('、') 
+                        : (seasonal.favorable_gods && seasonal.favorable_gods.length > 0 
+                            ? seasonal.favorable_gods.join('、') 
+                            : '--');
+                    setIfExists('adjustmentGod', adjustmentGods);
+                    
+                    let recommendations = [];
+                    
+                    if (seasonal.priority_order && seasonal.priority_order.length > 0) {
+                        const priorityText = seasonal.priority_order
+                            .map(item => `${item.priority}. ${item.god}`)
+                            .join(', ');
+                        recommendations.push(`调候优先级: ${priorityText}`);
+                    }
+                    
+                    if (seasonal.favorable_gods && seasonal.favorable_gods.length > 0) {
+                        recommendations.push(`喜: ${seasonal.favorable_gods.join('、')}`);
+                    }
+                    
+                    if (seasonal.unfavorable_gods && seasonal.unfavorable_gods.length > 0) {
+                        recommendations.push(`忌: ${seasonal.unfavorable_gods.join('、')}`);
+                    }
+                    
+                    const recommendationText = recommendations.length > 0 
+                        ? recommendations.join(' | ') 
+                        : '根据出生季节调节五行平衡';
+                    setIfExists('seasonalRecommendation', recommendationText);
+                    
+                    const birthMonth = data.basic_info && data.basic_info.gregorian_date ? 
+                                      this.extractMonth(data.basic_info.gregorian_date) : null;
+                    if (birthMonth) {
+                        const season = this.getSeason(birthMonth);
+                        setIfExists('birthSeason', season);
+                    }
+                }
+            }
+            
+            extractMonth(dateString) {
+                const match = dateString.match(/(\\d{4})年(\\d{1,2})月/);
+                return match ? parseInt(match[2]) : null;
+            }
+            
+            getSeason(month) {
+                if (month >= 3 && month <= 5) return '春季 (Spring)';
+                if (month >= 6 && month <= 8) return '夏季 (Summer)';
+                if (month >= 9 && month <= 11) return '秋季 (Autumn)';
+                return '冬季 (Winter)';
+            }
+        }
+        
+        const testCalculator = new TestBaziCalculator();
+        
+        function testModules() {
+            testCalculator.testModules();
+        }
+    </script>
+</body>
+</html>

@@ -222,12 +222,25 @@ class BaziCalculator {
         if (data.five_elements && data.five_elements.scores) {
             this.displayFiveElements(data.five_elements.scores, data.five_elements.status);
             
+            const setIfExists = (id, value) => { 
+                const el = document.getElementById(id); 
+                if (el) {
+                    el.textContent = value || '--';
+                    console.log(`Setting ${id} to: ${value}`); // 调试信息
+                }
+            };
+            
             if (data.five_elements.strength) {
-                const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
                 setIfExists('chartStrength', data.five_elements.strength);
                 
                 // 显示强弱平衡状态
                 const balance = this.analyzeElementBalance(data.five_elements.scores, data.five_elements.strength);
+                console.log('Element Balance calculated:', balance); // 调试信息
+                setIfExists('elementBalance', balance);
+            } else {
+                // 如果没有strength数据，仍然尝试分析平衡状态
+                const balance = this.analyzeElementBalance(data.five_elements.scores, null);
+                console.log('Element Balance calculated (no strength):', balance); // 调试信息
                 setIfExists('elementBalance', balance);
             }
             
@@ -323,14 +336,47 @@ class BaziCalculator {
     }
     
     analyzeElementBalance(scores, strength) {
-        const total = Object.values(scores).reduce((sum, score) => sum + score, 0);
-        const average = total / 5;
-        const variance = Object.values(scores).reduce((sum, score) => sum + Math.pow(score - average, 2), 0) / 5;
+        if (!scores || Object.keys(scores).length === 0) {
+            console.log('Element Balance: No scores available');
+            return "Unknown (未知)";
+        }
         
-        if (variance < 10) return "Balanced";
-        if (strength > 35) return "Strong";
-        if (strength < 25) return "Weak";
-        return "Moderate";
+        console.log('Element Balance: Analyzing scores:', scores);
+        
+        const values = Object.values(scores);
+        const total = values.reduce((sum, score) => sum + score, 0);
+        
+        if (total === 0) {
+            console.log('Element Balance: Total score is 0');
+            return "No Data (无数据)";
+        }
+        
+        const average = total / 5;
+        const variance = values.reduce((sum, score) => sum + Math.pow(score - average, 2), 0) / 5;
+        
+        // 分析五行分布
+        const maxElement = Math.max(...values);
+        const minElement = Math.min(...values);
+        const difference = maxElement - minElement;
+        
+        console.log('Element Balance: max:', maxElement, 'min:', minElement, 'diff:', difference, 'variance:', variance);
+        
+        // 根据差异和方差判断平衡状态
+        if (variance < 5 && difference < 8) {
+            return "Highly Balanced (高度平衡)";
+        } else if (variance < 15 && difference < 15) {
+            return "Balanced (平衡)";
+        } else if (difference > 25) {
+            return "Severely Imbalanced (严重失衡)";
+        } else if (difference > 15) {
+            return "Imbalanced (失衡)";
+        } else if (strength && strength > 35) {
+            return "Strong Dominant (强势主导)";
+        } else if (strength && strength < 25) {
+            return "Weak Scattered (弱势分散)";
+        } else {
+            return "Moderate Balance (中等平衡)";
+        }
     }
     
     displayTenGods(data) {
@@ -459,249 +505,6 @@ class BaziCalculator {
         // 这个函数现在不需要了，因为API已经正确解析了所有信息
         // 保留函数以避免破坏现有代码，但不执行任何操作
         return;
-    }
-    
-    displayPersonalityInsights(data) {
-        // 基于五行和格局的个性分析
-        const insights = this.generatePersonalityInsights(data);
-        
-        const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
-        setIfExists('characterTraits', insights.character);
-        setIfExists('strengthsTalents', insights.strengths);
-        setIfExists('areasGrowth', insights.growth);
-    }
-    
-    generatePersonalityInsights(data) {
-        // 简化的个性分析逻辑
-        let character = "Based on your bazi chart, you possess a unique combination of traits that reflect the balance of five elements in your constitution.";
-        let strengths = "Your natural abilities shine through your elemental composition, providing you with distinctive talents and capabilities.";
-        let growth = "Every chart has areas for development, and understanding these can help you achieve greater balance and fulfillment.";
-        
-        if (data.five_elements && data.five_elements.scores) {
-            const scores = data.five_elements.scores;
-            const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-            
-            switch (dominant) {
-                case '木':
-                    character = "You have a strong Wood element, indicating creativity, growth-oriented thinking, and natural leadership abilities.";
-                    strengths = "Your innovative spirit and ability to adapt make you excellent at pioneering new projects and inspiring others.";
-                    break;
-                case '火':
-                    character = "Fire dominates your chart, suggesting passion, enthusiasm, and strong communication skills.";
-                    strengths = "Your charismatic personality and ability to motivate others are your greatest assets in both personal and professional relationships.";
-                    break;
-                case '土':
-                    character = "Earth element prominence indicates stability, reliability, and practical wisdom in your approach to life.";
-                    strengths = "Your grounded nature and ability to build lasting foundations make you a trusted advisor and dependable partner.";
-                    break;
-                case '金':
-                    character = "Metal element strength suggests precision, determination, and strong analytical abilities.";
-                    strengths = "Your attention to detail and systematic approach help you excel in fields requiring accuracy and strategic thinking.";
-                    break;
-                case '水':
-                    character = "Water element dominance indicates intuition, adaptability, and deep emotional intelligence.";
-                    strengths = "Your ability to flow with circumstances and understand others' emotions makes you naturally wise and empathetic.";
-                    break;
-            }
-        }
-        
-        return { character, strengths, growth };
-    }
-    
-    displayLifeGuidance(data) {
-        // 生活各方面的指导建议
-        const guidance = this.generateLifeGuidance(data);
-        
-        const setIfExists = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value || '--'; };
-        setIfExists('careerWealth', guidance.career);
-        setIfExists('relationships', guidance.relationships);
-        setIfExists('healthWellness', guidance.health);
-        setIfExists('lifePurpose', guidance.purpose);
-    }
-    
-    generateLifeGuidance(data) {
-        return {
-            career: "Your elemental composition suggests certain career paths may be more harmonious with your natural energy. Consider fields that align with your dominant elements.",
-            relationships: "Understanding your bazi chart can help you build more harmonious relationships by recognizing compatible energy patterns and communication styles.",
-            health: "Your five-element balance indicates specific areas of health to focus on. Maintaining elemental harmony through lifestyle choices supports overall wellbeing.",
-            purpose: "Your unique bazi pattern reveals your spiritual path and life mission. Embracing your authentic nature leads to greater fulfillment and success."
-        };
-    }
-    
-    updateSummaryCards(data) {
-        // Update chart strength summary
-        const strengthElement = document.getElementById('summaryStrength');
-        if (strengthElement && data.five_elements && data.five_elements.strength) {
-            strengthElement.textContent = data.five_elements.strength;
-        }
-        
-        // Update element balance summary
-        const balanceElement = document.getElementById('summaryBalance');
-        if (balanceElement && data.five_elements && data.five_elements.scores) {
-            const balance = this.analyzeElementBalance(data.five_elements.scores, data.five_elements.strength);
-            balanceElement.textContent = balance;
-        }
-        
-        // Update primary pattern summary
-        const patternElement = document.getElementById('summaryPattern');
-        if (patternElement) {
-            let primaryPattern = '--';
-            
-            if (data.analysis && data.analysis.patterns) {
-                primaryPattern = data.analysis.patterns[0] || '--';
-            } else if (data.raw_output) {
-                const patternMatch = data.raw_output.match(/格局选用：([^\\n]+)/);
-                if (patternMatch) {
-                    const patterns = patternMatch[1].split(/[：；]/);
-                    if (patterns.length > 1) {
-                        primaryPattern = patterns[1].trim();
-                    }
-                }
-            }
-            
-            patternElement.textContent = primaryPattern;
-        }
-    }
-    
-
-    displayStrengthAnalysis(data) {
-        // 显示总分数
-        const totalScoreElement = document.getElementById('strengthTotalScore');
-        if (totalScoreElement && data.five_elements && data.five_elements.strength) {
-            totalScoreElement.textContent = data.five_elements.strength;
-        }
-        
-        // 显示强弱分类
-        const classificationElement = document.getElementById('strengthClassification');
-        if (classificationElement && data.five_elements && data.five_elements.strength) {
-            const strength = data.five_elements.strength;
-            const isWeak = strength <= 29;
-            classificationElement.textContent = isWeak ? 'Weak (偏弱)' : 'Strong (偏强)';
-            classificationElement.style.color = isWeak ? '#dc2626' : '#059669';
-        }
-        
-        // 显示湿度分数
-        const humidityScoreElement = document.getElementById('humidityScore');
-        if (humidityScoreElement && data.five_elements && data.five_elements.humidity_score !== undefined) {
-            humidityScoreElement.textContent = data.five_elements.humidity_score;
-        }
-        
-        // 显示湿度状态
-        const humidityConditionElement = document.getElementById('humidityCondition');
-        if (humidityConditionElement && data.five_elements && data.five_elements.humidity_score !== undefined) {
-            const humidity = data.five_elements.humidity_score;
-            let condition = 'Normal';
-            let color = '#059669';
-            
-            if (humidity < -3) {
-                condition = 'Cold & Wet (偏寒湿)';
-                color = '#1d4ed8';
-            } else if (humidity > 3) {
-                condition = 'Hot & Dry (偏燥热)';
-                color = '#dc2626';
-            } else {
-                condition = 'Balanced (平衡)';
-                color = '#059669';
-            }
-            
-            humidityConditionElement.textContent = condition;
-            humidityConditionElement.style.color = color;
-        }
-        
-        // 显示强弱影响解读
-        this.displayStrengthInterpretation(data);
-    }
-    
-    displayStrengthInterpretation(data) {
-        // 根据八字强弱提供解读和建议
-        const strengthImpactElement = document.getElementById('strengthImpact');
-        const strengthRecommendationsElement = document.getElementById('strengthRecommendations');
-        
-        const strength = data.five_elements && data.five_elements.strength;
-        const isWeak = data.five_elements && data.five_elements.weak;
-        const humidityScore = data.five_elements && data.five_elements.humidity_score;
-        
-        let interpretation = '';
-        let recommendations = '';
-        
-        if (isWeak) {
-            interpretation = `Your bazi chart shows a weak constitution (偏弱), meaning your day master needs support from helpful elements. This indicates you benefit from collaboration, supportive relationships, and environments that nurture your natural talents.`;
-            recommendations = `• Seek supportive partnerships and mentorship<br>
-• Focus on building steady foundations rather than rapid expansion<br>  
-• Cultivate patience and persistence in your endeavors<br>
-• Surround yourself with people who appreciate your qualities`;
-        } else {
-            interpretation = `Your bazi chart shows a strong constitution (偏强), meaning your day master has abundant energy and self-reliance. This indicates natural leadership abilities and the capacity to overcome challenges independently.`;
-            recommendations = `• Channel your energy into meaningful projects and goals<br>
-• Practice moderation to avoid overwhelming others<br>
-• Use your strength to help and guide those around you<br>
-• Balance confidence with humility and openness to feedback`;
-        }
-        
-        // 湿度影响解读
-        if (humidityScore !== undefined) {
-            if (humidityScore < -3) {
-                interpretation += ` Your chart tends toward cold and wet conditions, suggesting you benefit from warmth, activity, and energizing environments.`;
-            } else if (humidityScore > 3) {
-                interpretation += ` Your chart tends toward hot and dry conditions, suggesting you benefit from cooling, calming, and moistening influences.`;
-            } else {
-                interpretation += ` Your chart shows balanced humidity conditions, indicating good adaptability to different environments.`;
-            }
-        }
-        
-        if (strengthImpactElement) {
-            strengthImpactElement.innerHTML = interpretation;
-        }
-        
-        if (strengthRecommendationsElement) {
-            strengthRecommendationsElement.innerHTML = recommendations;
-        }
-    }
-    
-    displayStrengthInterpretation(data) {
-        // 根据八字强弱提供解读和建议
-        const strengthImpactElement = document.getElementById('strengthImpact');
-        const strengthRecommendationsElement = document.getElementById('strengthRecommendations');
-        
-        const strength = data.five_elements && data.five_elements.strength;
-        const isWeak = data.five_elements && data.five_elements.weak;
-        const humidityScore = data.five_elements && data.five_elements.humidity_score;
-        
-        let interpretation = '';
-        let recommendations = '';
-        
-        if (isWeak) {
-            interpretation = `Your bazi chart shows a weak constitution (偏弱), meaning your day master needs support from helpful elements. This indicates you benefit from collaboration, supportive relationships, and environments that nurture your natural talents.`;
-            recommendations = `• Seek supportive partnerships and mentorship<br>
-• Focus on building steady foundations rather than rapid expansion<br>  
-• Cultivate patience and persistence in your endeavors<br>
-• Surround yourself with people who appreciate your qualities`;
-        } else {
-            interpretation = `Your bazi chart shows a strong constitution (偏强), meaning your day master has abundant energy and self-reliance. This indicates natural leadership abilities and the capacity to overcome challenges independently.`;
-            recommendations = `• Channel your energy into meaningful projects and goals<br>
-• Practice moderation to avoid overwhelming others<br>
-• Use your strength to help and guide those around you<br>
-• Balance confidence with humility and openness to feedback`;
-        }
-        
-        // 湿度影响解读
-        if (humidityScore !== undefined) {
-            if (humidityScore < -3) {
-                interpretation += ` Your chart tends toward cold and wet conditions, suggesting you benefit from warmth, activity, and energizing environments.`;
-            } else if (humidityScore > 3) {
-                interpretation += ` Your chart tends toward hot and dry conditions, suggesting you benefit from cooling, calming, and moistening influences.`;
-            } else {
-                interpretation += ` Your chart shows balanced humidity conditions, indicating good adaptability to different environments.`;
-            }
-        }
-        
-        if (strengthImpactElement) {
-            strengthImpactElement.innerHTML = interpretation;
-        }
-        
-        if (strengthRecommendationsElement) {
-            strengthRecommendationsElement.innerHTML = recommendations;
-        }
     }
     
     displayPatternAnalysis(data) {
@@ -1094,91 +897,6 @@ class BaziCalculator {
                 advice: '避免重大决策'
             }
         ];
-    }
-    
-    displayProfessionalAnalysis(data) {
-        // 显示古籍条文
-        this.displayClassicalReferences(data);
-        
-        // 显示深度分析
-        this.initializeAnalysisTabs();
-        
-        // 填充深度分析内容
-        this.populateDeepAnalysis(data);
-    }
-    
-    displayClassicalReferences(data) {
-        const quoteElement = document.getElementById('classicalQuote');
-        const sourceElement = document.getElementById('quoteSource');
-        
-        if (quoteElement && sourceElement) {
-            // 根据八字匹配古籍条文
-            const reference = this.matchClassicalReference(data);
-            quoteElement.textContent = reference.quote;
-            sourceElement.textContent = reference.source;
-        }
-    }
-    
-    matchClassicalReference(data) {
-        // 简化的古籍条文匹配
-        const references = [
-            {
-                quote: "甲木参天，脱胎要火。春不容金，秋不容土。火炽乘龙，水荡骑虎。地润天和，植立千古。",
-                source: "-- 《穷通宝鉴》甲木篇"
-            },
-            {
-                quote: "乙木虽柔，割羊解牛。怀丁抱丙，跨凤乘猴。虚湿之地，骑马亦忧。藤萝系甲，可春可秋。",
-                source: "-- 《穷通宝鉴》乙木篇"
-            }
-        ];
-        
-        return references[0]; // 简化返回第一个
-    }
-    
-    initializeAnalysisTabs() {
-        const tabs = document.querySelectorAll('.analysis-tab');
-        const panels = document.querySelectorAll('.analysis-panel');
-        
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const targetPanel = tab.getAttribute('data-analysis');
-                
-                // 移除所有active状态
-                tabs.forEach(t => t.classList.remove('active'));
-                panels.forEach(p => p.classList.remove('active'));
-                
-                // 激活当前tab和panel
-                tab.classList.add('active');
-                const panel = document.getElementById(`${targetPanel}-panel`);
-                if (panel) {
-                    panel.classList.add('active');
-                }
-            });
-        });
-    }
-    
-    populateDeepAnalysis(data) {
-        // 填充各个分析面板的内容
-        const analyses = this.generateDeepAnalysis(data);
-        
-        const setIfExists = (id, value) => { 
-            const el = document.getElementById(id); 
-            if (el) el.textContent = value || '--'; 
-        };
-        
-        setIfExists('structureAnalysis', analyses.structure);
-        setIfExists('balanceAnalysis', analyses.balance);
-        setIfExists('combinationAnalysis', analyses.combination);
-        setIfExists('transformationAnalysis', analyses.transformation);
-    }
-    
-    generateDeepAnalysis(data) {
-        return {
-            structure: "您的八字结构显示了独特的能量配置。日干作为命主的核心，与其他干支形成了特定的力量对比关系，这种结构决定了您的基本性格特征和人生发展方向。",
-            balance: "从五行平衡的角度分析，您的命局中各个元素的分布呈现出特定的模式。强势的元素为您提供了天然的优势，而相对较弱的元素则指出了需要加强和注意的方面。",
-            combination: "天干地支之间的组合关系揭示了更深层的命理信息。这些组合不仅影响基本的五行力量，还会产生特殊的化学反应，形成独特的能量场和运势走向。",
-            transformation: "在特定的条件下，某些干支组合可能发生化气现象，这会显著改变原有的五行属性和力量对比，对命运产生重要影响。需要结合大运流年来综合判断。"
-        };
     }
     
     displayFiveElements(scores, status) {

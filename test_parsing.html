@@ -3,75 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bazi Parsing Test</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .test-result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
-        .success { background-color: #d4edda; border-color: #c3e6cb; }
-        .error { background-color: #f8d7da; border-color: #f5c6cb; }
-    </style>
+    <title>Bazi API Test</title>
 </head>
 <body>
-    <h1>Bazi Parsing Test Results</h1>
+    <h1>Bazi API Test</h1>
+    
+    <button onclick="testAPI()">Test API</button>
+    
     <div id="results"></div>
-
+    
     <script>
-        async function testParsing() {
-            const testCases = [
-                { year: 1990, month: 5, day: 15, hour: 14, gender: "male", calendar_type: "gregorian", name: "Spring Birth" },
-                { year: 1985, month: 2, day: 10, hour: 8, gender: "female", calendar_type: "gregorian", name: "Winter Birth" },
-                { year: 1992, month: 8, day: 20, hour: 16, gender: "male", calendar_type: "gregorian", name: "Summer Birth" }
-            ];
-
-            const resultsDiv = document.getElementById('results');
-
-            for (const testCase of testCases) {
-                try {
-                    const response = await fetch('http://localhost:5001/api/calculate', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(testCase)
-                    });
-
-                    const data = await response.json();
+        async function testAPI() {
+            try {
+                const response = await fetch('http://localhost:5001/api/calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        year: 1990,
+                        month: 5,
+                        day: 15,
+                        hour: 14,
+                        gender: 'male',
+                        calendar_type: 'gregorian'
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('API Response:', result);
+                
+                if (result.success) {
+                    const data = result.data;
                     
-                    const resultDiv = document.createElement('div');
-                    resultDiv.className = 'test-result';
+                    // Test Spiritual Stars
+                    console.log('Spiritual Stars:', data.analysis && data.analysis.spiritual_stars);
                     
-                    if (data.success) {
-                        resultDiv.className += ' success';
-                        const solarTerms = data.data.basic_info.solar_terms || 'NOT FOUND';
-                        const lifePalace = data.data.basic_info.life_palace || 'NOT FOUND';
+                    // Test Luck Cycles
+                    console.log('Luck Cycles:', data.analysis && data.analysis.luck_cycles);
+                    
+                    // Test Seasonal Adjustment
+                    console.log('Seasonal Adjustment:', data.analysis && data.analysis.seasonal_adjustment);
+                    console.log('Jinbuhuan Seasonal:', data.analysis && data.analysis.jinbuhuan_seasonal);
+                    
+                    document.getElementById('results').innerHTML = `
+                        <h2>Results:</h2>
+                        <h3>Spiritual Stars (${data.analysis.spiritual_stars ? data.analysis.spiritual_stars.length : 0}):</h3>
+                        <p>${data.analysis.spiritual_stars ? data.analysis.spiritual_stars.join(', ') : 'None'}</p>
                         
-                        resultDiv.innerHTML = `
-                            <h3>${testCase.name} ✓</h3>
-                            <p><strong>Solar Terms:</strong> ${solarTerms}</p>
-                            <p><strong>Life Palace:</strong> ${lifePalace}</p>
-                            <p><strong>Four Pillars:</strong> ${data.data.four_pillars.year} ${data.data.four_pillars.month} ${data.data.four_pillars.day} ${data.data.four_pillars.hour}</p>
-                        `;
-                    } else {
-                        resultDiv.className += ' error';
-                        resultDiv.innerHTML = `
-                            <h3>${testCase.name} ✗</h3>
-                            <p><strong>Error:</strong> ${data.error}</p>
-                        `;
-                    }
-                    
-                    resultsDiv.appendChild(resultDiv);
-                } catch (error) {
-                    const resultDiv = document.createElement('div');
-                    resultDiv.className = 'test-result error';
-                    resultDiv.innerHTML = `
-                        <h3>${testCase.name} ✗</h3>
-                        <p><strong>Network Error:</strong> ${error.message}</p>
+                        <h3>Luck Cycles (${data.analysis.luck_cycles ? data.analysis.luck_cycles.length : 0}):</h3>
+                        <p>${data.analysis.luck_cycles ? JSON.stringify(data.analysis.luck_cycles.slice(0, 2), null, 2) : 'None'}</p>
+                        
+                        <h3>Seasonal Adjustment:</h3>
+                        <p>${data.analysis.seasonal_adjustment ? JSON.stringify(data.analysis.seasonal_adjustment, null, 2) : 'None'}</p>
+                        
+                        <h3>Jinbuhuan Seasonal:</h3>
+                        <p>${data.analysis.jinbuhuan_seasonal ? JSON.stringify(data.analysis.jinbuhuan_seasonal, null, 2) : 'None'}</p>
                     `;
-                    resultsDiv.appendChild(resultDiv);
                 }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('results').innerHTML = `<p>Error: ${error.message}</p>`;
             }
         }
-
-        // Run tests when page loads
-        testParsing();
     </script>
 </body>
 </html>
