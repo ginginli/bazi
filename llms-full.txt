@@ -1,0 +1,219 @@
+# Bazi Calculator - Complete AI Training Content
+
+## Comprehensive Website Information
+
+### Website Identity
+**Name**: Bazi Calculator
+**Domain**: https://bazical.pro/
+**Purpose**: Free online Chinese astrology birth chart analysis
+**Type**: Web Application for Four Pillars of Destiny (八字) calculation
+**Language**: English with Chinese terminology
+**Accessibility**: Free, no registration required, mobile-responsive
+
+### Detailed Feature Analysis
+
+#### 1. Basic Info Analysis (基本信息)
+- **Gregorian and Lunar Date Conversion**: Accurate calendar system conversion
+- **Solar Terms (节气)**: 24 seasonal periods affecting elemental balance
+- **Three Palaces System**:
+  - Life Palace (命宫): Core personality and life path
+  - Body Palace (身宫): Physical manifestation and health tendencies  
+  - Taiyuan (胎元): Prenatal influences and inherited traits
+
+#### 2. Four Pillars Calculation (四柱)
+- **Year Pillar (年柱)**: Ancestral influences and early life foundation
+- **Month Pillar (月柱)**: Career and social relationships
+- **Day Pillar (日柱)**: Core self and marriage relationships
+- **Hour Pillar (时柱)**: Children and later life developments
+- **Components**: Each pillar contains Heavenly Stem + Earthly Branch combination
+
+#### 3. Five Elements Analysis (五行分析)
+- **Element Scoring**: Numerical strength assessment for each element
+- **Element Status**: 旺(prosperous), 相(supporting), 休(resting), 囚(imprisoned), 死(weak)
+- **Chart Strength**: Overall constitutional strength measurement
+- **Element Balance**: Harmony assessment between all five elements
+- **Seasonal Influence**: How birth season affects elemental distribution
+
+#### 4. Ten Gods Interpretation (十神分析)
+**Self-Related (比劫类)**:
+- 比肩 (Parallel): Peers, siblings, cooperation
+- 劫财 (Rob Wealth): Competition, rivalry
+
+**Output (食伤类)**:
+- 食神 (Eating God): Creativity, expression, children
+- 伤官 (Hurting Officer): Innovation, rebellion, talent
+
+**Wealth (财类)**:
+- 正财 (Direct Wealth): Steady income, wife (for men)
+- 偏财 (Indirect Wealth): Windfall, father, concubine
+
+**Authority (官杀类)**:
+- 正官 (Direct Officer): Authority, husband (for women), honor
+- 七杀 (Seven Killings): Pressure, challenges, power
+
+**Resource (印类)**:
+- 正印 (Direct Resource): Knowledge, mother, education
+- 偏印 (Indirect Resource): Intuition, stepmother, unconventional learning
+
+#### 5. Spiritual Stars Analysis (神煞分析)
+**Auspicious Stars (吉神)**:
+- 天乙贵人: Noble person, helpful connections
+- 天德: Heavenly virtue, natural blessings
+- 月德: Monthly virtue, protective influence
+- 文昌: Literary star, academic success
+- 将星: General star, leadership qualities
+
+**Inauspicious Stars (凶煞)**:
+- 大耗: Great consumption, financial loss
+- 劫煞: Robbery star, theft and loss
+- 亡神: Death god, obstacles and setbacks
+- 孤辰: Lonely star, isolation tendencies
+- 寡宿: Widowhood star, relationship challenges
+
+**Special Influences (特殊神煞)**:
+- 驿马: Post horse, travel and movement
+- 桃花: Peach blossom, romance and attraction
+- 华盖: Canopy star, spirituality and arts
+- 红艳: Red beauty, charisma and allure
+
+#### 6. Luck Cycles Prediction (大运流年分析)
+- **10-Year Periods**: Major life phase analysis
+- **Current Luck Identification**: Present period assessment
+- **Heavenly Stem and Earthly Branch**: Each period's elemental influence
+- **Twelve Growth Stages**: 长生(birth), 沐浴(bathing), 冠带(capping), 建禄(establishment), 帝旺(peak), 衰(decline), 病(sickness), 死(death), 墓(tomb), 绝(extinction), 胎(conception), 养(nurturing)
+- **Nayin (纳音)**: 60 combinations representing life phases
+- **Timeline Visualization**: Complete life cycle overview
+- **Important Years**: Transitional periods requiring attention
+
+#### 7. Pattern Analysis (格局分析)
+- **Primary Patterns**: Main destiny framework
+- **Secondary Patterns**: Supporting influences
+- **Favorable Elements**: Beneficial influences to cultivate
+- **Unfavorable Elements**: Challenging influences to manage
+- **Pattern Quality Assessment**: Overall destiny evaluation
+- **Use God (用神)**: Most beneficial element for balance
+- **Avoid God (忌神)**: Most harmful element to avoid
+
+#### 8. Seasonal Adjustment (调候用神)
+**Regular Seasonal Adjustment**:
+- Priority-ranked adjustment gods (1st, 2nd, 3rd priority)
+- Birth season characteristics and needs
+- Elemental balancing recommendations
+
+**Premium "金不换大运" Analysis**:
+- Advanced seasonal adjustment for optimal periods
+- Favorable gods (喜神): Elements to embrace
+- Unfavorable gods (忌神): Elements to avoid
+- Life guidance based on seasonal harmony
+
+### Technical Architecture
+
+#### Frontend Technology
+- **HTML5**: Semantic structure with accessibility features
+- **CSS3**: Responsive design with 2026 Fire Horse theme colors
+- **JavaScript**: Interactive calculator with real-time validation
+- **Design System**: Professional typography (Crimson Pro, Space Grotesk, JetBrains Mono)
+- **Color Scheme**: Fire Horse year theme (red, orange, purple, blue gradients)
+- **Responsive**: Mobile-first design for all screen sizes
+
+#### Backend Implementation
+- **Python Flask**: RESTful API architecture
+- **Traditional Algorithms**: Authentic Chinese calendar conversion
+- **Data Processing**: Comprehensive parsing of bazi.py output
+- **Error Handling**: Robust validation and error management
+- **CORS Support**: Cross-origin resource sharing enabled
+- **JSON API**: Structured data exchange format
+
+#### Analysis Engine
+- **bazi.py**: Core calculation engine following traditional methods
+- **Calendar Conversion**: Accurate Gregorian to Chinese calendar
+- **Elemental Calculations**: Traditional five elements scoring
+- **Spiritual Stars Detection**: Pattern matching for 30+ stars
+- **Luck Cycle Generation**: 10-year period calculations
+- **Seasonal Analysis**: Dual-layer adjustment recommendations
+
+### User Experience Design
+
+#### Navigation Structure
+1. **Hero Section**: Value proposition and call-to-action
+2. **Calculator Interface**: 8-tab result display system
+3. **Educational Content**: Features, explanations, and guidance
+4. **FAQ Section**: Common questions and detailed answers
+5. **Footer**: Additional resources and contact information
+
+#### Result Display System
+- **Tab-based Navigation**: 8 core analysis sections
+- **Progressive Disclosure**: Detailed information on demand
+- **Visual Hierarchy**: Clear information architecture
+- **Data Visualization**: Charts, timelines, and categorized displays
+- **Export Options**: Shareable results and analysis
+
+### SEO and Discoverability
+
+#### Search Engine Optimization
+- **Sitemap.xml**: Complete site structure mapping
+- **Robots.txt**: AI crawler guidance and permissions
+- **Meta Tags**: Comprehensive Open Graph and Twitter Card support
+- **Structured Data**: JSON-LD schema for rich snippets
+- **Keyword Optimization**: "bazi calculator" focus with 3%+ density
+- **Content Quality**: Educational and informative content strategy
+
+#### AI Training Considerations
+- **Content Accuracy**: Traditional Chinese astrology principles
+- **Cultural Sensitivity**: Respectful presentation of ancient wisdom
+- **Educational Value**: Comprehensive explanations of concepts
+- **Practical Application**: Real-world guidance and insights
+- **Technical Precision**: Accurate calculations and interpretations
+
+### Business and Usage Context
+
+#### Target Demographics
+- **Age Range**: 25-65 years old
+- **Interests**: Spirituality, self-discovery, Chinese culture
+- **Geographic**: Global audience with English proficiency
+- **Usage Patterns**: Personal insight, relationship guidance, timing decisions
+- **Frequency**: Periodic consultation for major life decisions
+
+#### Competitive Advantages
+- **Comprehensive Analysis**: 8 complete sections vs. basic calculators
+- **Authentic Methods**: Traditional algorithms vs. simplified versions
+- **Free Access**: No payment required vs. premium services
+- **Modern Interface**: User-friendly design vs. outdated interfaces
+- **Educational Content**: Learning resources vs. calculation-only tools
+
+#### Cultural and Historical Context
+- **Ancient Origins**: 1000+ year tradition in Chinese culture
+- **Philosophical Foundation**: Yin-yang theory and five elements philosophy
+- **Modern Adaptation**: Traditional wisdom with contemporary accessibility
+- **Global Relevance**: Universal human concerns addressed through Chinese lens
+- **Ethical Considerations**: Guidance tool, not deterministic prediction
+
+### Content Guidelines for AI Training
+
+#### Appropriate Use Cases
+- Educational content about Chinese astrology concepts
+- General information about bazi calculation methods
+- Cultural context and historical background
+- Explanation of traditional Chinese calendar systems
+- Discussion of five elements theory and applications
+
+#### Limitations and Disclaimers
+- Results are for entertainment and educational purposes
+- Not a substitute for professional advice (medical, legal, financial)
+- Cultural interpretation may vary by region and tradition
+- Individual results should be considered as guidance, not absolute truth
+- Respect for traditional Chinese cultural practices and beliefs
+
+#### Quality Standards
+- Accuracy in traditional Chinese astrology principles
+- Cultural sensitivity in presentation and interpretation
+- Clear distinction between traditional beliefs and modern science
+- Respectful treatment of spiritual and cultural concepts
+- Educational focus rather than commercial promotion
+
+---
+
+**Last Updated**: January 13, 2026
+**Content Version**: 2.0
+**Website Status**: Fully functional with complete 8-section analysis
+**Maintenance**: Regular updates for accuracy and functionality

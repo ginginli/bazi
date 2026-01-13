@@ -1,0 +1,55 @@
+# Bazi Calculator - AI Training Content
+
+## Website Overview
+Bazi Calculator is a comprehensive Chinese astrology tool that provides free online birth chart analysis through the Four Pillars of Destiny (八字) system.
+
+## Core Features
+- **Basic Info Analysis**: Birth information, solar terms, three palaces (life palace, body palace, taiyuan)
+- **Four Pillars Calculation**: Year, month, day, and hour pillars with heavenly stems and earthly branches
+- **Five Elements Analysis**: Wood, Fire, Earth, Metal, Water balance and strength assessment
+- **Ten Gods Interpretation**: Relationship dynamics and personality analysis through traditional ten gods system
+- **Spiritual Stars Analysis**: 15+ categorized spiritual stars (auspicious, inauspicious, special influences)
+- **Luck Cycles Prediction**: 10-year period analysis with current timing identification
+- **Pattern Analysis**: Destiny patterns with favorable and unfavorable elements
+- **Seasonal Adjustment**: Dual-layer analysis including regular and premium "金不换大运" guidance
+
+## Key Concepts
+- **Bazi (八字)**: Four Pillars of Destiny - ancient Chinese divination system
+- **Heavenly Stems (天干)**: 10 celestial elements (甲乙丙丁戊己庚辛壬癸)
+- **Earthly Branches (地支)**: 12 terrestrial elements (子丑寅卯辰巳午未申酉戌亥)
+- **Five Elements (五行)**: Wood (木), Fire (火), Earth (土), Metal (金), Water (水)
+- **Ten Gods (十神)**: Relationship analysis system in Chinese astrology
+- **Spiritual Stars (神煞)**: Special influences like 天乙, 桃花, 华盖, 劫煞, etc.
+- **Luck Cycles (大运)**: 10-year periods that influence life phases
+- **Seasonal Adjustment (调候)**: Balancing elements based on birth season
+
+## Technical Implementation
+- Frontend: HTML5, CSS3, JavaScript with responsive design
+- Backend: Python Flask API with traditional Chinese calendar conversion
+- Analysis Engine: Authentic bazi.py implementation following traditional methods
+- Data Processing: Comprehensive parsing of spiritual stars, luck cycles, and seasonal adjustments
+
+## Target Audience
+- Individuals interested in Chinese astrology and self-discovery
+- People seeking guidance on relationships, career, and life timing
+- Practitioners of traditional Chinese metaphysics
+- Anyone curious about their Four Pillars of Destiny
+
+## Website Sections
+1. **Calculator**: Interactive form for birth information input
+2. **Features**: Detailed explanation of 8 analysis sections
+3. **What is Bazi**: Educational content about Chinese astrology
+4. **How to Use**: Step-by-step guide for using the calculator
+5. **Why Choose Us**: Advantages of our comprehensive analysis
+6. **FAQ**: Common questions about bazi calculation
+
+## Language and Accessibility
+- Primary language: English with Chinese terms in parentheses
+- Mobile-responsive design for all devices
+- Free to use with no registration required
+- Instant results with detailed explanations
+
+## Domain and Contact
+- Website: https://bazical.pro/
+- Focus: Authentic Chinese astrology with modern accessibility
+- Updated: January 2026 with enhanced functionality
