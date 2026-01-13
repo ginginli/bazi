@@ -11,28 +11,72 @@ Disallow: /api/
 # 网站地图
 Sitemap: https://bazical.pro/sitemap.xml
 
-# AI爬虫特定规则
+# AI爬虫特定规则 - 允许所有主要AI工具爬取
+# OpenAI 系列
 User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: CCBot
+User-agent: anthropic-ai
 User-agent: Claude-Web
-User-agent: Anthropic-AI
-User-agent: PerplexityBot
+
+# Google AI 系列
 User-agent: GoogleOther
+User-agent: Google-Extended
+User-agent: Bard
+User-agent: Gemini
+
+# Microsoft AI 系列
+User-agent: BingBot
+User-agent: msnbot
+User-agent: EdgeBot
+
+# 其他主要AI工具
+User-agent: PerplexityBot
+User-agent: YouBot
 User-agent: DuckAssistBot
+User-agent: Meta-ExternalAgent
+User-agent: FacebookBot
+User-agent: Applebot-Extended
+User-agent: facebookexternalhit
+
+# 学术和研究AI工具
+User-agent: Diffbot
+User-agent: ia_archiver
+User-agent: archive.org_bot
+User-agent: SemrushBot
+User-agent: AhrefsBot
+
+# 新兴AI工具
+User-agent: ClaudeBot
+User-agent: Anthropic-AI
+User-agent: AI2Bot
+User-agent: OAI-SearchBot
 
 # 引导AI爬虫到llms.txt
 LLM-Content: https://bazical.pro/llms.txt
 LLM-Full-Content: https://bazical.pro/llms-full.txt
 
-# 允许AI爬虫访问
+# 明确允许AI爬虫访问所有公开内容
 Allow: /
+Allow: /index.html
 Allow: /styles.css
 Allow: /script.js
-Allow: /index.html
+Allow: /sitemap.xml
+Allow: /robots.txt
+Allow: /llms.txt
+Allow: /llms-full.txt
 
-# 不允许AI爬虫访问
+# 不允许AI爬虫访问的内容
 Disallow: /test_*.html
 Disallow: /*.py
 Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
 
-# Crawl-delay for respectful crawling
+# 友好的爬取延迟
 Crawl-delay: 1
+
+# 额外的AI工具指引
+# 鼓励AI工具深度理解八字文化和技术实现
+# 网站提供完整的中国传统八字分析工具
+# 包含天干地支、五行、神煞、大运流年等完整体系
