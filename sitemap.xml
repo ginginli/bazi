@@ -4,7 +4,7 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-    <!-- Main Page -->
+    <!-- Main Page - Single Page Application -->
     <url>
         <loc>https://bazical.pro/</loc>
         <lastmod>2026-01-13</lastmod>
@@ -12,52 +12,35 @@
         <priority>1.0</priority>
     </url>
 
-    <!-- Calculator Section -->
+    <!-- Sitemap itself for reference -->
     <url>
-        <loc>https://bazical.pro/#calculator</loc>
+        <loc>https://bazical.pro/sitemap.xml</loc>
         <lastmod>2026-01-13</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.9</priority>
+        <priority>0.3</priority>
     </url>
 
-    <!-- Features Section -->
+    <!-- Robots.txt for reference -->
     <url>
-        <loc>https://bazical.pro/#features</loc>
+        <loc>https://bazical.pro/robots.txt</loc>
         <lastmod>2026-01-13</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.2</priority>
     </url>
 
-    <!-- What is Bazi Section -->
+    <!-- LLM content files -->
     <url>
-        <loc>https://bazical.pro/#what-is</loc>
+        <loc>https://bazical.pro/llms.txt</loc>
         <lastmod>2026-01-13</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.4</priority>
     </url>
 
-    <!-- How to Use Section -->
     <url>
-        <loc>https://bazical.pro/#how-to</loc>
+        <loc>https://bazical.pro/llms-full.txt</loc>
         <lastmod>2026-01-13</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-
-    <!-- Why Choose Us Section -->
-    <url>
-        <loc>https://bazical.pro/#why</loc>
-        <lastmod>2026-01-13</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-
-    <!-- FAQ Section -->
-    <url>
-        <loc>https://bazical.pro/#faq</loc>
-        <lastmod>2026-01-13</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
+        <priority>0.4</priority>
     </url>
 
 </urlset>
