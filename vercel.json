@@ -32,6 +32,10 @@
       "dest": "/bazi_api.py"
     },
     {
+      "src": "/2026-chinese-zodiac.html",
+      "dest": "/2026-chinese-zodiac.html"
+    },
+    {
       "src": "/sitemap.xml",
       "dest": "/sitemap.xml"
     },

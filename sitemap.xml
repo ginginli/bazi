@@ -12,6 +12,14 @@
         <priority>1.0</priority>
     </url>
 
+    <!-- 2026 Chinese Zodiac Page -->
+    <url>
+        <loc>https://bazical.pro/2026-chinese-zodiac.html</loc>
+        <lastmod>2026-01-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
     <!-- Sitemap itself for reference -->
     <url>
         <loc>https://bazical.pro/sitemap.xml</loc>
